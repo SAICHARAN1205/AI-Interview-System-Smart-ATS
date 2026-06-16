@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interviews | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="js/interviews.js" defer></script>
+</head>
+<body data-page="interviews" data-nav-current="interviews">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge">Interview Scheduling</p>
+                    <h1>Schedule shortlisted candidates with clear feedback.</h1>
+                    <p class="hero-text">
+                        This page shows shortlisted candidates from your recruiter jobs, lets you choose a date and time, and submits the interview schedule through the backend scheduling endpoint.
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Recruiter</span>
+                        <strong id="interviews-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Selected Candidates</span>
+                        <strong id="interviews-selected-count">0</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Scheduled</span>
+                        <strong id="interviews-scheduled-count">0</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section id="interviews-page-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Candidates</p>
+                        <h2>Shortlisted candidates ready for interviews</h2>
+                    </div>
+                    <p class="section-copy">
+                        Pick a date and time per shortlisted candidate, then schedule or reschedule interviews directly from the card.
+                    </p>
+                </div>
+
+                <div id="interviews-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Loading shortlisted candidates...</span>
+                </div>
+
+                <div id="interviews-empty" class="hidden"></div>
+                <div id="interviews-grid" class="interview-grid"></div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

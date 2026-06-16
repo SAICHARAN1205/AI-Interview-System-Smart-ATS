@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Dashboard | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/analytics-charts.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="js/recruiter.js" defer></script>
+</head>
+<body data-page="recruiter-dashboard" data-nav-current="analytics">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge">Recruiter Dashboard</p>
+                    <h1>Run the recruiter workflow from one control room.</h1>
+                    <p class="hero-text">
+                        Track live pipeline movement, export hiring insights, spot weak postings early, and keep every recruiter decision grounded in backend analytics.
+                    </p>
+                    <div class="hero-actions hero-actions-left">
+                        <a href="create-job.html" class="btn btn-primary">Create Job</a>
+                        <a href="applicants.html" class="btn btn-outline">Review Applicants</a>
+                        <button type="button" class="btn btn-secondary" id="recruiter-export-pdf">Export PDF</button>
+                        <button type="button" class="btn btn-outline" id="recruiter-export-csv">Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Signed In As</span>
+                        <strong id="recruiter-user-email">-</strong>
+                        <p class="subtle-text">Recruiter access is required for this workspace.</p>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Role</span>
+                        <strong id="recruiter-role-label">-</strong>
+                        <p class="subtle-text">Candidate accounts are redirected back to the candidate dashboard.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="recruiter-dashboard-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Overview</p>
+                        <h2>Recruiter health check</h2>
+                    </div>
+                        <p class="section-copy">
+                        Live totals from your recruiter-owned jobs, applicants, shortlisted candidates, rejected candidates, scheduled interviews, and hiring efficiency.
+                    </p>
+                </div>
+
+                <div id="recruiter-dashboard-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Loading recruiter metrics...</span>
+                </div>
+
+                <div class="metric-grid">
+                    <div id="recruiter-metrics-grid" class="metric-grid analytics-metric-grid-full"></div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Filters</p>
+                        <h2>Customize Analytics</h2>
+                    </div>
+                </div>
+                <div class="filters-grid" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div class="filter-group">
+                        <label for="filter-start-date">Start Date</label>
+                        <input type="date" id="filter-start-date" class="form-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-end-date">End Date</label>
+                        <input type="date" id="filter-end-date" class="form-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-job-role">Job Role (ID/Title)</label>
+                        <input type="text" id="filter-job-role" class="form-input" placeholder="e.g., Java Developer">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-work-mode">Work Mode</label>
+                        <select id="filter-work-mode" class="form-select">
+                            <option value="">All</option>
+                            <option value="REMOTE">Remote</option>
+                            <option value="HYBRID">Hybrid</option>
+                            <option value="ONSITE">On-site</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-experience">Experience</label>
+                        <select id="filter-experience" class="form-select">
+                            <option value="">All</option>
+                            <option value="FRESHER">Fresher</option>
+                            <option value="JUNIOR">Junior</option>
+                            <option value="MID_LEVEL">Mid-Level</option>
+                            <option value="SENIOR">Senior</option>
+                            <option value="EXECUTIVE">Executive</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="display: flex; align-items: flex-end;">
+                        <button type="button" id="apply-filters-btn" class="btn btn-primary">Apply Filters</button>
+                        <button type="button" id="clear-filters-btn" class="btn btn-outline" style="margin-left: 0.5rem;">Clear</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid analytics-dashboard-grid">
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Overview</p>
+                            <h2>Status Distribution</h2>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:300px; width:100%">
+                        <canvas id="statusDistributionChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Quality</p>
+                            <h2>ATS Score Distribution</h2>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:300px; width:100%">
+                        <canvas id="atsScoreChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Jobs</p>
+                            <h2>Applications Per Job</h2>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:300px; width:100%">
+                        <canvas id="applicationsPerJobChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Conversion</p>
+                            <h2>Hiring Funnel</h2>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:300px; width:100%">
+                        <canvas id="hiringFunnelChart"></canvas>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Top Candidates</p>
+                        <h2>Highest ATS Match Scores</h2>
+                    </div>
+                </div>
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #eaeaea; text-align: left;">
+                                <th style="padding: 12px;">Candidate</th>
+                                <th style="padding: 12px;">Job Role</th>
+                                <th style="padding: 12px;">Status</th>
+                                <th style="padding: 12px;">ATS Score</th>
+                                <th style="padding: 12px;">Match Score</th>
+                                <th style="padding: 12px;">Applied At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-candidates-tbody">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="info-grid">
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Hiring Insights</p>
+                            <h2>AI-backed recruiter guidance</h2>
+                        </div>
+                    </div>
+                    <div id="recruiter-insights-list" class="analytics-insight-list"></div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Job Performance Analytics</p>
+                            <h2>Hardest and strongest roles</h2>
+                        </div>
+                    </div>
+                    <div class="analytics-two-up">
+                        <div>
+                            <h3 class="analytics-subheading">Hardest To Fill</h3>
+                            <div id="recruiter-hardest-list" class="analytics-history-list"></div>
+                        </div>
+                        <div>
+                            <h3 class="analytics-subheading">Most Successful</h3>
+                            <div id="recruiter-success-list" class="analytics-history-list"></div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Workflow</p>
+                        <h2>Recruiter actions</h2>
+                    </div>
+                    <p class="section-copy">
+                        These routes cover the recruiter workflow requested for job creation, applicant review, score checks, and interview scheduling.
+                    </p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <article class="feature-card">
+                        <div>
+                            <p class="action-eyebrow">Create Job</p>
+                            <h3>Create Job</h3>
+                            <p>Post a new opening with salary and role / skills details, then keep it visible in your recruiter jobs list.</p>
+                        </div>
+                        <a href="create-job.html" class="btn btn-primary">Open Create Job</a>
+                    </article>
+
+                    <article class="feature-card">
+                        <div>
+                            <p class="action-eyebrow">My Jobs</p>
+                            <h3>My Jobs</h3>
+                            <p>Jump directly to the recruiter-owned jobs section to review cards, applicant counts, and future edit/delete actions.</p>
+                        </div>
+                        <a href="create-job.html?tab=my-jobs" class="btn btn-outline">View My Jobs</a>
+                    </article>
+
+                    <article class="feature-card">
+                        <div>
+                            <p class="action-eyebrow">Applicants</p>
+                            <h3>Applicants</h3>
+                            <p>Review candidate status, resume availability, and recruiter scoring from one responsive applicants page.</p>
+                        </div>
+                        <a href="applicants.html" class="btn btn-outline">Open Applicants</a>
+                    </article>
+
+                    <article class="feature-card">
+                        <div>
+                            <p class="action-eyebrow">Interviews</p>
+                            <h3>Schedule Interviews</h3>
+                            <p>Move shortlisted candidates into interview scheduling with date and time selection plus submission feedback.</p>
+                        </div>
+                        <a href="interviews.html" class="btn btn-secondary">Schedule Interviews</a>
+                    </article>
+
+                    <article class="feature-card">
+                        <div>
+                            <p class="action-eyebrow">Scores</p>
+                            <h3>Candidate Scores</h3>
+                            <p>Open the applicants workspace in score mode to compare recruiter-visible candidate scores quickly.</p>
+                        </div>
+                        <a href="applicants.html?mode=scores" class="btn btn-outline">View Scores</a>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Snapshot</p>
+                        <h2>Recent recruiter jobs</h2>
+                    </div>
+                    <p class="section-copy">
+                        A quick view of your most recent postings with applicant counts so you can jump to the next step faster.
+                    </p>
+                </div>
+
+                <div id="recruiter-jobs-snapshot" class="jobs-grid"></div>
+                <div id="recruiter-snapshot-empty" class="hidden"></div>
+            </section>
+
+            <section id="recruiter-admin-preview" class="panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Platform Preview</p>
+                        <h2>Admin analytics preparation</h2>
+                    </div>
+                    <p class="section-copy">
+                        These totals stay hidden unless an admin role is introduced.
+                    </p>
+                </div>
+                <div id="recruiter-admin-metrics" class="metric-grid analytics-metric-grid-full"></div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

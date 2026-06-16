@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Checker | SmartATS</title>
+    <meta name="description" content="Check your resume against ATS systems with real backend AI analysis, actionable improvement tips, and keyword gap detection.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/ats.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/analytics-charts.js" defer></script>
+    <script src="js/ats.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+</head>
+<body data-page="ats" data-nav-current="ats">
+    <header data-navbar-root></header>
+
+    <main class="page-wrapper" id="ats-main">
+        <section id="ats-state-landing" class="ats-state">
+            <div class="ats-hero">
+                <div class="ats-hero-copy">
+                    <span class="ats-hero-badge">AI Resume Analysis</span>
+                    <h1>Beat the ATS.<br><span class="ats-hero-gradient">Land More Interviews.</span></h1>
+                    <p class="ats-hero-sub">
+                        Upload your resume, choose a target role, optionally paste a job description, and get a real ATS analysis powered by the SmartATS backend.
+                    </p>
+                    <div class="ats-hero-stats">
+                        <div class="ats-stat">
+                            <span class="ats-stat-num">98%</span>
+                            <span class="ats-stat-lbl">Large employers use ATS filtering</span>
+                        </div>
+                        <div class="ats-stat">
+                            <span class="ats-stat-num">75%</span>
+                            <span class="ats-stat-lbl">Resumes can be filtered before human review</span>
+                        </div>
+                        <div class="ats-stat">
+                            <span class="ats-stat-num">10s</span>
+                            <span class="ats-stat-lbl">Fast AI-backed analysis flow</span>
+                        </div>
+                    </div>
+                    <div class="ats-hero-actions">
+                        <button class="ln-btn ln-btn-primary" type="button" onclick="window.atsApp && window.atsApp.goUpload()">Analyze My Resume</button>
+                        <a href="#ats-how" class="ln-btn ln-btn-outline">How it works</a>
+                    </div>
+                    <div class="ats-formats">
+                        <span class="ats-fmt-label">Supported formats:</span>
+                        <span class="ats-fmt-pill">PDF</span>
+                        <span class="ats-fmt-pill">DOC</span>
+                        <span class="ats-fmt-pill">DOCX</span>
+                    </div>
+                </div>
+                <div class="ats-hero-visual">
+                    <div class="ats-score-preview">
+                        <div class="ats-preview-ring">
+                            <svg viewBox="0 0 120 120" class="ats-ring-svg">
+                                <circle cx="60" cy="60" r="50" class="ats-ring-bg"></circle>
+                                <circle cx="60" cy="60" r="50" class="ats-ring-fill" style="--pct:0.84"></circle>
+                            </svg>
+                            <div class="ats-ring-inner">
+                                <span class="ats-ring-score">84</span>
+                                <span class="ats-ring-label">ATS Score</span>
+                            </div>
+                        </div>
+                        <div class="ats-preview-metrics">
+                            <div class="ats-pm-row">
+                                <span>Keyword Match</span>
+                                <div class="ats-pm-bar"><div class="ats-pm-fill" style="width:81%"></div></div>
+                                <span class="ats-pm-val">81%</span>
+                            </div>
+                            <div class="ats-pm-row">
+                                <span>Formatting</span>
+                                <div class="ats-pm-bar"><div class="ats-pm-fill ats-pm-green" style="width:89%"></div></div>
+                                <span class="ats-pm-val">89%</span>
+                            </div>
+                            <div class="ats-pm-row">
+                                <span>Projects</span>
+                                <div class="ats-pm-bar"><div class="ats-pm-fill ats-pm-amber" style="width:72%"></div></div>
+                                <span class="ats-pm-val">72%</span>
+                            </div>
+                            <div class="ats-pm-row">
+                                <span>ATS Safety</span>
+                                <div class="ats-pm-bar"><div class="ats-pm-fill ats-pm-green" style="width:87%"></div></div>
+                                <span class="ats-pm-val">87%</span>
+                            </div>
+                        </div>
+                        <div class="ats-preview-badge">Backend AI analysis with safe frontend rendering</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ats-features" id="ats-how">
+                <div class="ln-sh">
+                    <span class="ln-sh-kicker">What You Get</span>
+                    <h2>Complete ATS analysis in one guided flow</h2>
+                    <p>SmartATS analyzes resume alignment, formatting, missing keywords, and project signal without exposing raw model output.</p>
+                </div>
+                <div class="ats-feat-grid">
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">01</div>
+                        <h3>Real ATS Score</h3>
+                        <p>Receive a backend-generated ATS score with structured response validation and fallback safety.</p>
+                    </div>
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">02</div>
+                        <h3>Keyword Gaps</h3>
+                        <p>See matched keywords, missing keywords, and role-specific gaps for your target position.</p>
+                    </div>
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">03</div>
+                        <h3>Formatting Review</h3>
+                        <p>Identify whether your resume structure is easy for ATS parsers and recruiters to read.</p>
+                    </div>
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">04</div>
+                        <h3>Project Quality</h3>
+                        <p>Get feedback on how clearly your projects show ownership, technical depth, and outcomes.</p>
+                    </div>
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">05</div>
+                        <h3>Actionable Tips</h3>
+                        <p>Improve your resume with clear strengths, weaknesses, and optimization suggestions.</p>
+                    </div>
+                    <div class="ats-feat-card">
+                        <div class="ats-feat-icon">06</div>
+                        <h3>Saved History</h3>
+                        <p>Track ATS progress through backend analytics snapshots so resume improvement is visible over time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ats-landing-cta">
+                <h2>Ready to optimize your resume?</h2>
+                <p>Use the SmartATS candidate flow to upload once, analyze, and iterate safely.</p>
+                <button class="ln-btn ln-btn-primary" type="button" onclick="window.atsApp && window.atsApp.goUpload()">Start ATS Analysis</button>
+            </div>
+        </section>
+
+        <section id="ats-state-upload" class="ats-state hidden">
+            <div class="ats-upload-wrap">
+                <div class="ats-upload-header">
+                    <button class="ats-back-btn" type="button" onclick="window.atsApp && window.atsApp.goLanding()">Back</button>
+                    <div>
+                        <span class="section-kicker">Step 1 of 2</span>
+                        <h1 style="font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:-.03em;margin:.25rem 0 .5rem">Upload Your Resume</h1>
+                        <p style="color:var(--c-muted)">Choose the target role first, then upload your file for real backend ATS analysis.</p>
+                    </div>
+                </div>
+
+                <div class="ats-input-panel">
+                    <label class="field field-wide">
+                        <span>Target Role</span>
+                        <input type="text" id="ats-target-role" placeholder="Backend Engineer" value="Software Engineer">
+                    </label>
+                    <label class="field field-wide">
+                        <span>Job Description (Optional)</span>
+                        <textarea id="ats-job-description" rows="5" placeholder="Paste a target job description to improve keyword matching and missing-skill analysis."></textarea>
+                    </label>
+                </div>
+
+                <div id="ats-drop-zone" class="ats-drop-zone" role="button" tabindex="0" aria-label="Drop resume file here or click to upload">
+                    <input type="file" id="ats-file-input" accept=".pdf,.doc,.docx" style="display:none">
+                    <div class="ats-drop-icon">FILE</div>
+                    <p class="ats-drop-title">Drag and drop your resume here</p>
+                    <p class="ats-drop-sub">or click to browse files</p>
+                    <div class="ats-drop-formats">
+                        <span class="ats-fmt-pill">PDF</span>
+                        <span class="ats-fmt-pill">DOC</span>
+                        <span class="ats-fmt-pill">DOCX</span>
+                        <span class="ats-drop-size">Max 10 MB</span>
+                    </div>
+                </div>
+
+                <div class="ats-format-callout">
+                    <strong>Supported resume formats:</strong> PDF, DOC, and DOCX.
+                    PDFs must contain selectable text. Scanned or image-only PDFs are not supported yet.
+                </div>
+
+                <div id="ats-file-preview" class="ats-file-preview hidden">
+                    <div class="ats-fp-icon" id="ats-fp-icon">PDF</div>
+                    <div class="ats-fp-info">
+                        <span class="ats-fp-name" id="ats-fp-name">resume.pdf</span>
+                        <span class="ats-fp-size" id="ats-fp-size">245 KB</span>
+                    </div>
+                    <div class="ats-fp-actions">
+                        <button class="ln-btn ln-btn-outline" id="ats-replace-btn" type="button" onclick="document.getElementById('ats-file-input').click()">Replace</button>
+                        <button class="ln-btn" id="ats-remove-btn" type="button" style="color:var(--danger);background:rgba(191,52,52,.08);border:1px solid rgba(191,52,52,.2)">Remove</button>
+                    </div>
+                </div>
+
+                <div id="ats-upload-progress" class="ats-upload-progress hidden">
+                    <div class="ats-up-label"><span class="spinner"></span> <span id="ats-upload-progress-text">Uploading...</span></div>
+                    <div class="ats-up-track"><div class="ats-up-fill" id="ats-up-fill"></div></div>
+                </div>
+
+                <div id="ats-upload-warning" class="message-box hidden" role="status" aria-live="polite"></div>
+                <div id="ats-upload-message" class="message-box hidden" role="status" aria-live="polite"></div>
+
+                <div class="ats-upload-actions">
+                    <button class="ln-btn ln-btn-primary" id="ats-analyze-btn" type="button" disabled>Analyze Resume</button>
+                    <p class="ats-upload-note" id="ats-upload-note">Select a resume file to enable analysis.</p>
+                </div>
+
+                <div id="ats-history-preview" class="ats-history-preview hidden">
+                    <div class="section-heading" style="margin-bottom:.75rem">
+                        <div>
+                            <span class="section-kicker">Recent Runs</span>
+                            <h2 style="font-size:1.15rem;margin:.15rem 0 0">Previous Analyses</h2>
+                        </div>
+                        <button class="ln-btn ln-btn-outline" id="ats-view-history-btn" type="button" onclick="window.atsApp && window.atsApp.goHistory()" style="font-size:.82rem;padding:.45rem .85rem">View All</button>
+                    </div>
+                    <div id="ats-history-preview-list" class="ats-history-mini-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ats-state-processing" class="ats-state hidden">
+            <div class="ats-processing-wrap">
+                <div class="ats-proc-header">
+                    <div class="ats-proc-pulse">
+                        <div class="ats-pulse-ring"></div>
+                        <div class="ats-pulse-ring ats-pulse-ring-2"></div>
+                        <div class="ats-pulse-core">AI</div>
+                    </div>
+                    <h1 class="ats-proc-title">Analyzing Your Resume</h1>
+                    <p class="ats-proc-sub" id="ats-proc-subtitle">Parsing resume structure...</p>
+                </div>
+
+                <div class="ats-proc-steps">
+                    <div class="ats-proc-step" id="ats-step-1">
+                        <div class="ats-step-icon">1</div>
+                        <div class="ats-step-body">
+                            <strong>Parsing Resume</strong>
+                            <span>Extracting text and section structure</span>
+                        </div>
+                        <div class="ats-step-status" id="ats-step-1-status">...</div>
+                    </div>
+                    <div class="ats-proc-step ats-step-pending" id="ats-step-2">
+                        <div class="ats-step-icon">2</div>
+                        <div class="ats-step-body">
+                            <strong>Keyword Matching</strong>
+                            <span>Scanning for role-aligned skills and terms</span>
+                        </div>
+                        <div class="ats-step-status" id="ats-step-2-status">-</div>
+                    </div>
+                    <div class="ats-proc-step ats-step-pending" id="ats-step-3">
+                        <div class="ats-step-icon">3</div>
+                        <div class="ats-step-body">
+                            <strong>Formatting Analysis</strong>
+                            <span>Checking ATS-safe formatting and readability</span>
+                        </div>
+                        <div class="ats-step-status" id="ats-step-3-status">-</div>
+                    </div>
+                    <div class="ats-proc-step ats-step-pending" id="ats-step-4">
+                        <div class="ats-step-icon">4</div>
+                        <div class="ats-step-body">
+                            <strong>Score Generation</strong>
+                            <span>Calculating compatibility and signal strength</span>
+                        </div>
+                        <div class="ats-step-status" id="ats-step-4-status">-</div>
+                    </div>
+                    <div class="ats-proc-step ats-step-pending" id="ats-step-5">
+                        <div class="ats-step-icon">5</div>
+                        <div class="ats-step-body">
+                            <strong>Improvement Guidance</strong>
+                            <span>Preparing safe frontend feedback</span>
+                        </div>
+                        <div class="ats-step-status" id="ats-step-5-status">-</div>
+                    </div>
+                </div>
+
+                <div class="ats-proc-bar-wrap">
+                    <div class="ats-proc-bar"><div class="ats-proc-fill" id="ats-proc-fill"></div></div>
+                    <span class="ats-proc-pct" id="ats-proc-pct">0%</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="ats-state-results" class="ats-state hidden">
+            <div class="ats-results-toolbar">
+                <div>
+                    <button class="ats-back-btn" type="button" onclick="window.atsApp && window.atsApp.goUpload()">Analyze Another</button>
+                </div>
+                <div class="ats-results-toolbar-actions">
+                    <button class="ln-btn ln-btn-outline" type="button" onclick="window.atsApp && window.atsApp.goHistory()">History</button>
+                    <button class="ln-btn ln-btn-outline" id="ats-download-btn" type="button" onclick="window.atsApp && window.atsApp.downloadReport()">Download Report</button>
+                </div>
+            </div>
+
+            <div id="ats-report-container">
+            <div class="ats-results-hero" id="ats-results-hero">
+                <div class="ats-results-score-wrap">
+                    <div class="ats-score-ring-lg">
+                        <svg viewBox="0 0 160 160" class="ats-ring-svg-lg">
+                            <circle cx="80" cy="80" r="68" class="ats-ring-bg"></circle>
+                            <circle cx="80" cy="80" r="68" class="ats-ring-fill-lg" id="ats-score-ring-circle"></circle>
+                        </svg>
+                        <div class="ats-ring-inner-lg">
+                            <span class="ats-ring-score-lg" id="ats-overall-score">--</span>
+                            <span class="ats-ring-label-lg">ATS Score</span>
+                        </div>
+                    </div>
+                    <div class="ats-score-verdict" id="ats-score-verdict">
+                        <span class="ats-verdict-pill" id="ats-verdict-pill">Analyzing...</span>
+                        <p id="ats-verdict-text"></p>
+                    </div>
+                </div>
+                <div class="ats-results-meta-grid">
+                    <div class="ats-meta-card">
+                        <span class="ats-meta-label">Pass Probability</span>
+                        <strong class="ats-meta-val" id="ats-pass-prob">--</strong>
+                    </div>
+                    <div class="ats-meta-card">
+                        <span class="ats-meta-label">Recruiter Readability</span>
+                        <strong class="ats-meta-val" id="ats-readability">--</strong>
+                    </div>
+                    <div class="ats-meta-card">
+                        <span class="ats-meta-label">Resume File</span>
+                        <strong class="ats-meta-val" id="ats-result-filename" style="font-size:.88rem;word-break:break-all">--</strong>
+                    </div>
+                    <div class="ats-meta-card">
+                        <span class="ats-meta-label">Target Role</span>
+                        <strong class="ats-meta-val" id="ats-target-role-result" style="font-size:.88rem">--</strong>
+                    </div>
+                    <div class="ats-meta-card">
+                        <span class="ats-meta-label">Analyzed On</span>
+                        <strong class="ats-meta-val" id="ats-result-time" style="font-size:.88rem">--</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ats-analysis-message" class="message-box hidden" role="status" aria-live="polite"></div>
+
+            <div class="panel ats-summary-panel">
+                <div class="section-heading" style="margin-bottom:.75rem">
+                    <div>
+                        <span class="section-kicker">Summary</span>
+                        <h2>Analysis Summary</h2>
+                    </div>
+                </div>
+                <p id="ats-analysis-summary" class="section-copy">Your ATS summary will appear here.</p>
+            </div>
+
+            <div class="panel" style="margin-top:1.25rem">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-kicker">Detailed Analysis</span>
+                        <h2>Score Breakdown</h2>
+                    </div>
+                </div>
+                <div class="ats-breakdown-grid" id="ats-breakdown-grid"></div>
+            </div>
+
+            <div class="panel" style="margin-top:1.25rem">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-kicker">ATS Analytics</span>
+                        <h2>History, trend, and heatmap</h2>
+                    </div>
+                </div>
+                <div class="analytics-two-up">
+                    <div id="ats-history-chart" class="analytics-chart-card"></div>
+                    <div id="ats-breakdown-donut" class="analytics-chart-card"></div>
+                </div>
+                <div style="margin-top:1rem">
+                    <div id="ats-heatmap-chart" class="analytics-chart-card"></div>
+                </div>
+            </div>
+
+            <div class="ats-results-lower">
+                <div class="panel">
+                    <div class="section-heading" style="margin-bottom:1rem">
+                        <div>
+                            <span class="section-kicker">Action Items</span>
+                            <h2>Improvement Suggestions</h2>
+                        </div>
+                    </div>
+                    <div id="ats-suggestions-list" class="ats-suggestions-list"></div>
+                </div>
+
+                <div class="panel ats-insights-panel">
+                    <div class="section-heading" style="margin-bottom:1rem">
+                        <div>
+                            <span class="section-kicker">Strengths</span>
+                            <h2>What Works</h2>
+                        </div>
+                    </div>
+                    <ul id="ats-strengths-list" class="helper-list"></ul>
+
+                    <div class="section-heading ats-inline-heading" style="margin:1.25rem 0 1rem">
+                        <div>
+                            <span class="section-kicker">Weaknesses</span>
+                            <h2>What To Fix</h2>
+                        </div>
+                    </div>
+                    <ul id="ats-weaknesses-list" class="helper-list"></ul>
+
+                    <div class="section-heading" style="margin:1.25rem 0 1rem">
+                        <div>
+                            <span class="section-kicker">Keywords</span>
+                            <h2>Missing &amp; Recommended</h2>
+                        </div>
+                    </div>
+                    <div class="ats-kw-section">
+                        <p class="ats-kw-label">Missing Keywords</p>
+                        <div id="ats-missing-keywords" class="ats-kw-chips"></div>
+                    </div>
+                    <div class="ats-kw-section" style="margin-top:1.25rem">
+                        <p class="ats-kw-label">Found Keywords</p>
+                        <div id="ats-found-keywords" class="ats-kw-chips"></div>
+                    </div>
+                    <div class="ats-kw-section" style="margin-top:1.25rem">
+                        <p class="ats-kw-label">Recommended Skills To Add</p>
+                        <div id="ats-recommended-skills" class="ats-kw-chips"></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <div id="ats-print-report" class="ats-print-report hidden"></div>
+        </section>
+
+        <section id="ats-state-history" class="ats-state hidden">
+            <div class="ats-history-wrap">
+                <div class="ats-history-header">
+                    <button class="ats-back-btn" type="button" onclick="window.atsApp && window.atsApp.goUpload()">Back to Upload</button>
+                    <div>
+                        <span class="section-kicker">Your Progress</span>
+                        <h1 style="font-size:clamp(1.4rem,3vw,2rem);margin:.25rem 0 .5rem">Analysis History</h1>
+                        <p style="color:var(--c-muted)">Track your recent ATS analyses and revisit earlier results.</p>
+                    </div>
+                    <button class="ln-btn ln-btn-danger" id="ats-clear-history-btn" type="button" style="align-self:start">Clear History</button>
+                </div>
+
+                <div id="ats-history-empty" class="empty-state hidden">
+                    <h3>No analyses yet</h3>
+                    <p>Upload your resume to start tracking your ATS score.</p>
+                </div>
+
+                <div id="ats-history-list" class="ats-history-list"></div>
+
+                <div class="panel" style="margin-top:1.25rem">
+                    <div class="section-heading">
+                        <div>
+                            <span class="section-kicker">Progress</span>
+                            <h2>ATS score timeline</h2>
+                        </div>
+                    </div>
+                    <div id="ats-history-page-chart" class="analytics-chart-card"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

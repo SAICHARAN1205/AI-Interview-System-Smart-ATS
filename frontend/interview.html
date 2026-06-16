@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mock Interview | SmartATS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/interview-monitor.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="js/interview-monitor.js" defer></script>
+    <script src="js/interview.js" defer></script>
+</head>
+<body data-page="mock-interview" data-nav-current="interview">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge">AI Mock Interview</p>
+                    <h1>Practice a structured interview for your next SmartATS role.</h1>
+                    <p class="hero-text">
+                        Configure the role, review the rules, answer each generated question, and receive AI feedback with practical next steps.
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Candidate</span>
+                        <strong id="interview-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Status</span>
+                        <strong id="interview-hero-status">Setup</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Elapsed</span>
+                        <strong id="interview-hero-elapsed">00:00</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section id="interview-page-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section id="interview-loading-panel" class="panel hidden" aria-live="polite">
+                <div class="interview-skeleton-grid">
+                    <span class="skeleton-line wide"></span>
+                    <span class="skeleton-line"></span>
+                    <span class="skeleton-line short"></span>
+                    <span class="skeleton-block"></span>
+                </div>
+            </section>
+
+            <section id="interview-setup-panel" class="panel interview-panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Setup</p>
+                        <h2>Interview setup</h2>
+                    </div>
+                    <p class="section-copy">
+                        Choose the role, difficulty, skills, type, and duration. SmartATS will generate a focused interview session from your selections.
+                    </p>
+                </div>
+
+                <form id="interview-setup-form" class="interview-setup-grid">
+                    <div class="interview-form-card">
+                        <label class="field field-wide">
+                            <span>Job Role</span>
+                            <select id="interview-job-select" required>
+                                <option value="">Loading roles...</option>
+                            </select>
+                        </label>
+
+                        <label class="field field-wide hidden" id="interview-custom-role-wrap">
+                            <span>Custom Role</span>
+                            <input type="text" id="interview-custom-role" placeholder="Frontend Engineer">
+                        </label>
+
+                        <label class="field">
+                            <span>Difficulty</span>
+                            <select id="interview-difficulty" required>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate" selected>Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span>Estimated Duration</span>
+                            <select id="interview-duration" required>
+                                <option value="15">15 minutes</option>
+                                <option value="20" selected>20 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                            </select>
+                        </label>
+
+                        <div class="field field-wide">
+                            <span>Skills / Technology</span>
+                            <div id="interview-skill-picker" class="skill-picker" aria-label="Skills and technology selection"></div>
+                            <input type="text" id="interview-custom-skill" placeholder="Add another skill and press Enter">
+                        </div>
+                    </div>
+
+                    <div class="interview-form-card">
+                        <div class="field field-wide">
+                            <span>Interview Type</span>
+                            <div class="interview-type-grid" role="radiogroup" aria-label="Interview type">
+                                <label class="type-option">
+                                    <input type="radio" name="interview-type" value="Technical" checked>
+                                    <strong>Technical</strong>
+                                    <small>Role and skill depth</small>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="interview-type" value="HR">
+                                    <strong>HR</strong>
+                                    <small>Behavior and fit</small>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="interview-type" value="Mixed">
+                                    <strong>Mixed</strong>
+                                    <small>Balanced practice</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field field-wide" style="margin-top: 1.5rem;">
+                            <span>Monitoring Mode</span>
+                            <div class="interview-type-grid" role="radiogroup" aria-label="Monitoring Mode">
+                                <label class="type-option">
+                                    <input type="radio" name="monitoring-mode" value="Camera + Voice" checked>
+                                    <strong>Camera + Voice</strong>
+                                    <small>Full monitored interview</small>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="monitoring-mode" value="Camera Only">
+                                    <strong>Camera Only</strong>
+                                    <small>Webcam monitoring, typing allowed</small>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="monitoring-mode" value="Voice Only">
+                                    <strong>Voice Only</strong>
+                                    <small>Mic enabled, camera optional</small>
+                                </label>
+                                <label class="type-option">
+                                    <input type="radio" name="monitoring-mode" value="Text Only">
+                                    <strong>Text Only</strong>
+                                    <small>Typing only, no camera/mic required</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="interview-start-button" class="btn btn-primary btn-full" style="margin-top: 1.5rem;">Start Interview</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="interview-generating-panel" class="panel hidden" aria-live="polite">
+                <div class="generating-state">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <div>
+                        <h2>Generating interview questions</h2>
+                        <p>SmartATS is preparing role-specific prompts from your setup.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── INSTRUCTIONS + DEVICE CHECK ── -->
+            <section id="interview-instructions-panel" class="panel interview-panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Instructions</p>
+                        <h2>Before you begin</h2>
+                    </div>
+                    <p class="section-copy">
+                        Read the expectations, check your devices, then start the timed interview.
+                    </p>
+                </div>
+
+                <div class="instructions-grid">
+                    <article class="instruction-card">
+                        <p class="card-kicker">Rules</p>
+                        <ul class="helper-list">
+                            <li>Answer using your microphone or by typing in the text area.</li>
+                            <li>Keep your camera on and remain visible throughout the session.</li>
+                            <li>Do not switch tabs or minimize the browser during the live session.</li>
+                            <li>Avoid one-line answers — use concise, complete responses with real examples.</li>
+                        </ul>
+                    </article>
+                    <article class="instruction-card">
+                        <p class="card-kicker">Timer</p>
+                        <h3 id="instructions-duration">20 minutes</h3>
+                        <p class="subtle-text">A countdown runs during the live interview and submits when time expires.</p>
+                    </article>
+
+                    <!-- DEVICE CHECK -->
+                    <article class="instruction-card im-device-card">
+                        <p class="card-kicker">Device Check</p>
+                        <div class="im-device-check-grid">
+                            <div class="im-device-row">
+                                <span class="im-device-dot" id="im-camera-dot"></span>
+                                <strong>Camera</strong>
+                                <span id="im-camera-status" class="im-device-label">Not checked</span>
+                            </div>
+                            <div class="im-device-row">
+                                <span class="im-device-dot" id="im-mic-dot"></span>
+                                <strong>Microphone</strong>
+                                <span id="im-mic-status" class="im-device-label">Not checked</span>
+                            </div>
+                        </div>
+                        <button type="button" id="im-device-check-btn" class="btn btn-outline btn-sm">Check Devices</button>
+                        <div id="im-camera-preview-wrap" class="im-camera-preview-wrap hidden">
+                            <video id="im-camera-preview" autoplay muted playsinline></video>
+                            <canvas id="im-face-canvas-preview" class="im-face-canvas"></canvas>
+                        </div>
+                        <div id="im-mic-level-wrap" class="im-mic-level-wrap hidden">
+                            <div class="im-mic-bar"><div id="im-mic-level-bar" class="im-mic-fill"></div></div>
+                            <span id="im-mic-level-label" class="im-device-label">Listening…</span>
+                        </div>
+                    </article>
+
+                    <article class="instruction-card">
+                        <p class="card-kicker">AI Scoring</p>
+                        <p class="subtle-text">Feedback combines completion, communication clarity, technical depth, confidence, fluency, and role-specific skill signals.</p>
+                    </article>
+                </div>
+
+                <div id="im-device-warning" class="message-box hidden" role="alert"></div>
+
+                <div class="interview-actions-row">
+                    <button type="button" id="interview-back-setup" class="btn btn-outline">Back to Setup</button>
+                    <button type="button" id="interview-begin-button" class="btn btn-primary">Begin Interview</button>
+                </div>
+            </section>
+
+            <!-- ── LIVE SESSION ── -->
+            <section id="interview-live-panel" class="panel interview-panel hidden">
+                <div class="interview-session-top">
+                    <div>
+                        <p class="section-kicker">Live Session</p>
+                        <h2 id="live-interview-title">AI Mock Interview</h2>
+                    </div>
+                    <div class="session-top-actions">
+                        <span class="status-pill" id="live-monitoring-mode" style="background: var(--background); color: var(--text-color);">Camera + Voice</span>
+                        <span class="im-recording-badge hidden" id="im-recording-badge"><span class="im-rec-dot"></span> REC</span>
+                        <span class="elapsed-pill" id="live-elapsed-time">Elapsed 00:00</span>
+                        <button type="button" id="interview-exit-button" class="btn btn-outline">Exit</button>
+                    </div>
+                </div>
+
+                <div id="live-session-message" class="message-box hidden" role="status" aria-live="polite"></div>
+
+                <!-- MONITORING WARNING TOAST -->
+                <div id="im-warning-toast" class="im-warning-toast hidden" role="alert">
+                    <span id="im-warning-icon" class="im-warning-icon">⚠</span>
+                    <span id="im-warning-text">Warning</span>
+                </div>
+
+                <div class="interview-live-grid im-live-grid-enhanced">
+                    <!-- LEFT: Question + Answer -->
+                    <section class="question-surface" aria-live="polite">
+                        <div class="question-meta-row">
+                            <span class="status-pill scheduled" id="live-question-number">Question 1</span>
+                            <span class="timer-chip" id="live-countdown">20:00 left</span>
+                        </div>
+
+                        <div class="progress-track" aria-label="Question progress">
+                            <span id="live-progress-fill"></span>
+                        </div>
+
+                        <h3 id="live-question-text">Question text appears here.</h3>
+
+                        <div class="question-context-grid">
+                            <div>
+                                <span class="summary-label">Status</span>
+                                <strong id="live-question-status">Pending</strong>
+                            </div>
+                            <div>
+                                <span class="summary-label">Saved</span>
+                                <strong id="live-save-status">Not saved yet</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="answer-surface">
+                        <label class="field">
+                            <span>Your Answer</span>
+                            <textarea id="live-answer" rows="8" placeholder="Type your answer here, or use the microphone to dictate."></textarea>
+                        </label>
+
+                        <!-- VOICE CONTROLS -->
+                        <div class="im-voice-controls" id="im-voice-controls">
+                            <button type="button" id="im-voice-start" class="btn btn-outline btn-sm im-voice-btn">
+                                <span class="im-mic-icon">🎙</span> Start Recording
+                            </button>
+                            <button type="button" id="im-voice-stop" class="btn btn-outline btn-sm im-voice-btn hidden">
+                                <span class="im-mic-icon im-mic-active">⏹</span> Stop Recording
+                            </button>
+                            <button type="button" id="im-voice-retry" class="btn btn-outline btn-sm im-voice-btn hidden">
+                                Retry
+                            </button>
+                            <span id="im-voice-status" class="im-voice-status"></span>
+                        </div>
+
+                        <!-- TRANSCRIPT PANEL -->
+                        <div id="im-transcript-panel" class="im-transcript-panel hidden">
+                            <p class="card-kicker">Live Transcript</p>
+                            <div id="im-transcript-text" class="im-transcript-text"></div>
+                        </div>
+
+                        <div class="interview-actions-row">
+                            <button type="button" id="live-prev-button" class="btn btn-outline">Previous</button>
+                            <button type="button" id="live-next-button" class="btn btn-primary">Next Question</button>
+                            <button type="button" id="live-submit-button" class="btn btn-primary hidden">Submit Interview</button>
+                        </div>
+                    </section>
+
+                    <!-- RIGHT SIDEBAR: Webcam + Mic Meter -->
+                    <aside class="im-monitoring-sidebar">
+                        <div class="im-webcam-container" style="position: relative;">
+                            <video id="im-live-webcam" autoplay muted playsinline></video>
+                            <canvas id="im-face-canvas-live" class="im-face-canvas"></canvas>
+                            <div id="im-cam-overlay-msg" class="im-cam-overlay-msg hidden">Face not detected</div>
+                            <div id="im-debug-overlay" style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #0f0; font-family: monospace; font-size: 10px; padding: 5px; border-radius: 4px; pointer-events: none; z-index: 10;">
+                                Yaw: <span id="debug-yaw">0</span><br>
+                                Pitch: <span id="debug-pitch">0</span><br>
+                                Roll: <span id="debug-roll">0</span><br>
+                                Status: <span id="debug-status">OK</span>
+                            </div>
+                        </div>
+                        <div class="im-sidebar-mic">
+                            <div class="im-mic-bar im-mic-bar-vertical"><div id="im-live-mic-level" class="im-mic-fill"></div></div>
+                            <span class="im-device-label">Mic Level</span>
+                        </div>
+                        <div class="im-monitoring-stats">
+                            <div class="im-stat"><span class="im-stat-val" id="im-stat-tab">0</span><span class="im-stat-lbl">Tab Switches</span></div>
+                            <div class="im-stat"><span class="im-stat-val" id="im-stat-face">0</span><span class="im-stat-lbl">Face Warnings</span></div>
+                        </div>
+                    </aside>
+                </div>
+
+                <section class="question-navigation-panel">
+                    <div class="section-heading compact-heading">
+                        <div>
+                            <p class="section-kicker">Progress</p>
+                            <h2>Question progress</h2>
+                        </div>
+                        <p id="live-progress-summary" class="section-copy">0 of 0 answered</p>
+                    </div>
+                    <div id="question-status-grid" class="question-status-grid"></div>
+                </section>
+            </section>
+
+            <section id="interview-submitting-panel" class="panel hidden" aria-live="polite">
+                <div class="submit-success-anim">
+                    <div class="success-checkmark">&check;</div>
+                    <h3>Submitting your answers</h3>
+                    <p>SmartATS is calculating your feedback.</p>
+                </div>
+            </section>
+
+            <!-- ── RESULTS ── -->
+            <section id="interview-results-panel" class="panel interview-panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Feedback</p>
+                        <h2>Interview results</h2>
+                    </div>
+                    <p id="results-summary" class="section-copy">Your AI feedback will appear here.</p>
+                </div>
+
+                <div class="results-grid im-results-grid">
+                    <article class="result-score-card overall">
+                        <span>Overall Score</span>
+                        <strong id="result-overall-score">0</strong>
+                    </article>
+                    <article class="result-score-card">
+                        <span>Communication</span>
+                        <strong id="result-communication-score">0</strong>
+                    </article>
+                    <article class="result-score-card">
+                        <span>Technical</span>
+                        <strong id="result-technical-score">0</strong>
+                    </article>
+                    <article class="result-score-card im-score-accent">
+                        <span>Confidence</span>
+                        <strong id="result-confidence-score">0</strong>
+                    </article>
+                    <article class="result-score-card im-score-accent">
+                        <span>Fluency</span>
+                        <strong id="result-fluency-score">0</strong>
+                    </article>
+                </div>
+
+                <!-- INTEGRITY SECTION -->
+                <div class="im-integrity-section">
+                    <h3>Interview Integrity</h3>
+                    <div class="im-integrity-grid">
+                        <div class="im-integrity-card">
+                            <span class="im-integrity-label">Status</span>
+                            <span id="result-integrity-status" class="im-integrity-badge im-badge-clean">Clean</span>
+                        </div>
+                        <div class="im-integrity-card">
+                            <span class="im-integrity-label">Tab Switches</span>
+                            <strong id="result-tab-switches">0</strong>
+                        </div>
+                        <div class="im-integrity-card">
+                            <span class="im-integrity-label">Face Warnings</span>
+                            <strong id="result-face-warnings">0</strong>
+                        </div>
+                        <div class="im-integrity-card">
+                            <span class="im-integrity-label">Suspicious Events</span>
+                            <strong id="result-suspicious-count">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-grid">
+                    <article class="feedback-card">
+                        <p class="card-kicker">Strengths</p>
+                        <ul id="result-strengths" class="helper-list"></ul>
+                    </article>
+                    <article class="feedback-card">
+                        <p class="card-kicker">Weaknesses</p>
+                        <ul id="result-weaknesses" class="helper-list"></ul>
+                    </article>
+                    <article class="feedback-card">
+                        <p class="card-kicker">Improvement Suggestions</p>
+                        <ul id="result-suggestions" class="helper-list"></ul>
+                    </article>
+                    <article class="feedback-card">
+                        <p class="card-kicker">Communication Analysis</p>
+                        <p id="result-communication-evaluation" class="subtle-text">Communication feedback appears here.</p>
+                    </article>
+                    <article class="feedback-card">
+                        <p class="card-kicker">Technical Relevance</p>
+                        <p id="result-technical-relevance" class="subtle-text">Technical relevance feedback appears here.</p>
+                    </article>
+                </div>
+
+                <div class="interview-actions-row">
+                    <button type="button" id="result-retry-button" class="btn btn-primary">Retry Interview</button>
+                    <button type="button" id="result-download-button" class="btn btn-outline">Download Feedback</button>
+                    <a href="dashboard.html" class="btn btn-outline">Back to Dashboard</a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

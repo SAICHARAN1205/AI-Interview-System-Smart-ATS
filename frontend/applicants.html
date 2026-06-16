@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="js/applicants.js" defer></script>
+    <script src="js/hiring-flow.js" defer></script>
+</head>
+<body data-page="applicants" data-nav-current="applicants">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge" id="applicants-badge">Applicant Review</p>
+                    <h1 id="applicants-title">Manage applicants across recruiter jobs.</h1>
+                    <p id="applicants-subtitle" class="hero-text">
+                        Review candidate details, recruiter-visible resume status, candidate scores, and application status updates from one page.
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Recruiter</span>
+                        <strong id="applicants-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Applicants</span>
+                        <strong id="applicants-total-count">0</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Shortlisted</span>
+                        <strong id="applicants-shortlisted-count">0</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section id="applicants-page-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section class="panel">
+                <div class="toolbar-row">
+                    <div>
+                        <p class="section-kicker">Filter</p>
+                        <h2>Applicants workspace</h2>
+                        <p class="section-copy">Filter by recruiter job or switch the page into candidate score mode from the recruiter dashboard.</p>
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <label class="field">
+                            <span>Job Filter</span>
+                            <select id="applicants-job-filter">
+                                <option value="all">All recruiter jobs</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Applicants</p>
+                        <h2 id="applicants-section-title">Loading applicants...</h2>
+                    </div>
+                    <p class="section-copy">
+                        Each applicant card shows candidate name, email, resume uploaded yes/no, candidate score when available, and application status.
+                    </p>
+                </div>
+
+                <div id="applicants-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Loading applicants...</span>
+                </div>
+
+                <div id="applicants-empty" class="hidden"></div>
+                <div id="applicants-grid" class="applicant-grid"></div>
+            </section>
+        </main>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+    <div id="schedule-modal-root"></div>
+</body>
+</html>

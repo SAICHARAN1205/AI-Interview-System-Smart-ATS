@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <style>
+        .message-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .message-box.show {
+            display: block;
+        }
+
+        .message-box.success {
+            background: rgba(21, 128, 61, 0.12);
+            color: #166534;
+            border: 1px solid rgba(21, 128, 61, 0.2);
+        }
+
+        .message-box.error {
+            background: rgba(220, 38, 38, 0.12);
+            color: #b91c1c;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .btn[disabled] {
+            opacity: 0.75;
+            cursor: wait;
+            transform: none;
+        }
+
+        .password-requirements {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .password-requirements li::before {
+            content: "✖";
+            color: #b91c1c;
+            font-size: 0.8rem;
+        }
+
+        .password-requirements li.valid::before {
+            content: "✔";
+            color: #166534;
+        }
+
+        .password-requirements li.valid {
+            color: #166534;
+        }
+    </style>
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+</head>
+<body data-nav-current="register">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="center-layout">
+            <section class="form-card">
+                <p class="badge">Register</p>
+                <h1>Create account</h1>
+                <p class="form-text">Fill in your details to create a candidate or recruiter account.</p>
+
+                <form id="register-form" class="form-layout">
+                    <label class="field">
+                        <span>Name</span>
+                        <input type="text" id="register-name" name="name" placeholder="Full name" required>
+                    </label>
+
+                    <label class="field">
+                        <span>Email</span>
+                        <input type="email" id="register-email" name="email" placeholder="you@example.com" required>
+                    </label>
+
+                    <div class="field">
+                        <label for="register-password"><span>Password</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+                            <button type="button" class="password-toggle" aria-label="Show password" title="Show password">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="password-requirements">
+                            Password must contain:
+                            <ul id="password-policy-list">
+                                <li id="req-length">Minimum 8 characters</li>
+                                <li id="req-upper">One uppercase letter</li>
+                                <li id="req-lower">One lowercase letter</li>
+                                <li id="req-number">One number</li>
+                                <li id="req-special">One special character (e.g. _, @, #)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <label class="field">
+                        <span>Role</span>
+                        <select id="register-role" name="role" required>
+                            <option value="CANDIDATE">CANDIDATE</option>
+                            <option value="RECRUITER">RECRUITER</option>
+                        </select>
+                    </label>
+
+                    <div class="field" style="margin-top: 1rem;">
+                        <span>Verify you are human</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                            <span id="register-captcha-question" style="font-weight: bold; font-size: 1.1rem; background: var(--bg-secondary); padding: 0.5rem 1rem; border-radius: 6px; flex-grow: 1; text-align: center;">Loading...</span>
+                            <button type="button" id="register-refresh-captcha" class="btn btn-secondary" style="padding: 0.5rem; border-radius: 6px;" title="Refresh CAPTCHA">🔄</button>
+                        </div>
+                        <input type="text" id="register-captcha-answer" name="captchaAnswer" placeholder="Your answer" required>
+                        <input type="hidden" id="register-captcha-token" name="captchaToken">
+                    </div>
+
+                    <div id="register-message" class="message-box" role="status" aria-live="polite"></div>
+
+                    <button type="submit" id="register-button" class="btn btn-primary btn-full">Register</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <style>
+        .message-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .message-box.show {
+            display: block;
+        }
+
+        .message-box.success {
+            background: rgba(21, 128, 61, 0.12);
+            color: #166534;
+            border: 1px solid rgba(21, 128, 61, 0.2);
+        }
+
+        .message-box.error {
+            background: rgba(220, 38, 38, 0.12);
+            color: #b91c1c;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .btn[disabled] {
+            opacity: 0.75;
+            cursor: wait;
+            transform: none;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .otp-inputs input {
+            width: 45px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .otp-inputs input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .resend-container {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .resend-link {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .resend-link.disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+    </style>
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/verify.js" defer></script>
+</head>
+<body data-nav-current="login">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="center-layout">
+            <section class="form-card">
+                <p class="badge">Security</p>
+                <h1>Verify your email</h1>
+                <p class="form-text">We sent a 6-digit code to <strong id="verify-email-display">your email</strong>. Enter it below to activate your account.</p>
+
+                <form id="verify-form" class="form-layout" style="margin-top: 2rem;">
+                    <div class="otp-inputs" id="otp-container">
+                        <input type="text" maxlength="1" class="otp-input" required autofocus>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                    </div>
+
+                    <div id="verify-message" class="message-box" role="status" aria-live="polite"></div>
+
+                    <button type="submit" id="verify-button" class="btn btn-primary btn-full">Verify Account</button>
+                    
+                    <div class="resend-container">
+                        <span id="timer-text">Resend code in <span id="timer-count">05:00</span></span>
+                        <span id="resend-btn" class="resend-link disabled" style="display: none;">Resend OTP</span>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

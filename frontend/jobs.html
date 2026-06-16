@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="js/hiring-flow.js" defer></script>
+</head>
+<body data-page="jobs" data-nav-current="jobs" id="jobs-page">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge" id="jobs-role-badge">Jobs Workspace</p>
+                    <h1 id="jobs-page-title">Jobs</h1>
+                    <p id="jobs-page-subtitle" class="hero-text">
+                        Loading your jobs view...
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Current User</span>
+                        <strong id="jobs-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Role View</span>
+                        <strong id="jobs-role-label">-</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Navigation</p>
+                        <h2>Role-based tools</h2>
+                    </div>
+                    <p class="section-copy">
+                        Use the quick links below to switch between your available tools.
+                    </p>
+                </div>
+
+                <div id="jobs-view-links" class="chip-links"></div>
+            </section>
+
+            <section id="jobs-global-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section id="jobs-helper-panel" class="panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Context</p>
+                        <h2 id="jobs-helper-title">Helper panel</h2>
+                    </div>
+                    <p id="jobs-helper-text" class="section-copy"></p>
+                </div>
+            </section>
+
+            <section id="create-job-panel" class="panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Recruiter</p>
+                        <h2>Create a new job</h2>
+                    </div>
+                    <p class="section-copy">
+                        Use your recruiter account to create a new posting through the backend API.
+                    </p>
+                </div>
+
+                <form id="create-job-form" class="form-layout split-form">
+                    <label class="field">
+                        <span>Job Title</span>
+                        <input type="text" id="create-job-title" name="title" placeholder="Senior Java Developer" required>
+                    </label>
+
+                    <label class="field">
+                        <span>Company</span>
+                        <input type="text" id="create-job-company" name="companyName" placeholder="AI Hiring Platform" required>
+                    </label>
+
+                    <label class="field">
+                        <span>Location</span>
+                        <input type="text" id="create-job-location" name="location" placeholder="Remote or Bangalore">
+                    </label>
+
+                    <label class="field field-wide">
+                        <span>Description</span>
+                        <textarea id="create-job-description" name="description" rows="5" placeholder="Describe the role, requirements, and responsibilities." required></textarea>
+                    </label>
+
+                    <button type="submit" id="create-job-button" class="btn btn-primary">Create Job</button>
+                </form>
+            </section>
+
+            <section id="resume-upload-panel" class="panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Candidate</p>
+                        <h2>Upload your resume</h2>
+                    </div>
+                    <p class="section-copy">
+                        Upload a PDF or document so matching and interview workflows can use it later.
+                    </p>
+                </div>
+
+                <form id="resume-upload-form" class="form-layout">
+                    <label class="field">
+                        <span>Resume File</span>
+                        <input type="file" id="resume-file" name="file" required>
+                    </label>
+
+                    <button type="submit" id="resume-upload-button" class="btn btn-primary upload-button">Upload Resume</button>
+                </form>
+            </section>
+
+            <section id="jobs-search-panel" class="panel hidden">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Search & Filter</p>
+                        <h2>Find your next role</h2>
+                    </div>
+                </div>
+                <div class="search-filter-bar">
+                    <div class="search-input-wrap">
+                        <input type="text" id="jobs-search" placeholder="Search by title, company, or skills..." autocomplete="off">
+                    </div>
+                    <select id="jobs-sort" class="filter-select">
+                        <option value="newest">Newest First</option>
+                        <option value="salary-high">Highest Salary</option>
+                        <option value="best-match">Best Match</option>
+                        <option value="title-az">Title A–Z</option>
+                    </select>
+                </div>
+                <div class="filter-bar-row" style="flex-wrap: wrap; gap: 0.5rem;">
+                    <select id="jobs-location-filter" class="filter-select">
+                        <option value="all">All Work Modes</option>
+                        <option value="REMOTE">Remote</option>
+                        <option value="ONSITE">Onsite</option>
+                        <option value="HYBRID">Hybrid</option>
+                    </select>
+                    <select id="jobs-type-filter" class="filter-select">
+                        <option value="all">Any Job Type</option>
+                        <option value="FULL_TIME">Full Time</option>
+                        <option value="PART_TIME">Part Time</option>
+                        <option value="CONTRACT">Contract</option>
+                        <option value="INTERNSHIP">Internship</option>
+                    </select>
+                    <select id="jobs-experience-filter" class="filter-select">
+                        <option value="all">Any Experience</option>
+                        <option value="FRESHER">Fresher</option>
+                        <option value="EXPERIENCED">Experienced</option>
+                    </select>
+                    <select id="jobs-salary-filter" class="filter-select">
+                        <option value="all">Any Salary</option>
+                        <option value="0-50000">Under $50K</option>
+                        <option value="50000-100000">$50K – $100K</option>
+                        <option value="100000-200000">$100K – $200K</option>
+                        <option value="200000+">$200K+</option>
+                    </select>
+                    <select id="jobs-company-filter" class="filter-select">
+                        <option value="all">All Companies</option>
+                    </select>
+                    <input type="text" id="jobs-skills-filter" class="filter-select" placeholder="Filter by skill..." style="min-width:150px; flex-grow: 1;">
+                </div>
+            </section>
+
+            <section id="jobs-status-tabs-panel" class="panel hidden">
+                <div id="jobs-status-tabs" class="status-tabs"></div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Jobs</p>
+                        <h2 id="jobs-section-title">Loading jobs...</h2>
+                    </div>
+                    <p id="jobs-section-copy" class="section-copy">
+                        Jobs will appear here once the page loads.
+                    </p>
+                </div>
+
+                <div id="jobs-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span id="jobs-loading-text">Loading jobs...</span>
+                </div>
+
+                <div id="jobs-empty" class="state-box hidden"></div>
+                <div id="jobs-grid" class="jobs-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <div id="apply-modal-root"></div>
+</body>
+</html>

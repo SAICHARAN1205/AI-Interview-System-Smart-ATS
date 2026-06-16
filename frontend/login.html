@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <style>
+        .message-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .message-box.show {
+            display: block;
+        }
+
+        .message-box.success {
+            background: rgba(21, 128, 61, 0.12);
+            color: #166534;
+            border: 1px solid rgba(21, 128, 61, 0.2);
+        }
+
+        .message-box.error {
+            background: rgba(220, 38, 38, 0.12);
+            color: #b91c1c;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .btn[disabled] {
+            opacity: 0.75;
+            cursor: wait;
+            transform: none;
+        }
+    </style>
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+</head>
+<body data-nav-current="login">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="center-layout">
+            <section class="form-card">
+                <p class="badge">Login</p>
+                <h1>Welcome back</h1>
+                <p class="form-text">Enter your email and password to continue.</p>
+
+                <form id="login-form" class="form-layout">
+                    <label class="field">
+                        <span>Email</span>
+                        <input type="email" id="login-email" name="email" placeholder="you@example.com" required>
+                    </label>
+
+                    <div class="field">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <label for="login-password"><span>Password</span></label>
+                            <a href="forgot-password.html" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 700;">Forgot Password?</a>
+                        </div>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="password-toggle" aria-label="Show password" title="Show password">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field" style="margin-top: 1rem;">
+                        <span>Verify you are human</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                            <span id="login-captcha-question" style="font-weight: bold; font-size: 1.1rem; background: var(--bg-secondary); padding: 0.5rem 1rem; border-radius: 6px; flex-grow: 1; text-align: center;">Loading...</span>
+                            <button type="button" id="login-refresh-captcha" class="btn btn-secondary" style="padding: 0.5rem; border-radius: 6px;" title="Refresh CAPTCHA">🔄</button>
+                        </div>
+                        <input type="text" id="login-captcha-answer" name="captchaAnswer" placeholder="Your answer" required>
+                        <input type="hidden" id="login-captcha-token" name="captchaToken">
+                    </div>
+
+                    <div id="login-message" class="message-box" role="status" aria-live="polite"></div>
+
+                    <button type="submit" id="login-button" class="btn btn-primary btn-full">Login</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

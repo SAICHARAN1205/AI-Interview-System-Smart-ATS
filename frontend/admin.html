@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Admin - SmartATS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* OVERRIDES FOR ADMIN DASHBOARD ONLY - CLEAN WHITE THEME */
+        body {
+            background: #f8fafc !important;
+            color: #1e293b !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        }
+        body::before, body::after {
+            display: none !important; /* Remove foggy overlay / background pattern */
+        }
+        
+        /* Navbar overrides */
+        .navbar {
+            background: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+            border: 1px solid #e2e8f0 !important;
+            backdrop-filter: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 1rem 2rem !important;
+        }
+        .nav-link {
+            color: #64748b !important;
+            background: transparent !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+        }
+        .nav-link:hover, .nav-link.is-active {
+            color: #0f172a !important;
+            background: #f1f5f9 !important;
+            transform: none !important;
+        }
+        .btn-primary {
+            background: #3b82f6 !important;
+            box-shadow: none !important;
+            border-radius: 6px !important;
+            color: #ffffff !important;
+        }
+        .btn-primary:hover {
+            background: #2563eb !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            background-color: #f8fafc;
+        }
+        .admin-sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 1px 0 3px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+        .admin-nav-item {
+            padding: 1rem 2rem;
+            color: #64748b;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .admin-nav-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .admin-nav-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+            border-left-color: #2563eb;
+            font-weight: 600;
+        }
+        .admin-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .admin-section {
+            display: none;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        
+        .admin-section h2 {
+            color: #0f172a;
+            font-weight: 700;
+            margin-top: 0;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .table-container {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+        .data-table th, .data-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 0.9rem;
+            vertical-align: middle;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        .status-active { background: #dcfce7 !important; color: #166534 !important; }
+        .status-suspended { background: #fee2e2 !important; color: #991b1b !important; }
+        .status-pending { background: #fef9c3 !important; color: #854d0e !important; }
+        .status-security { background: #ffe4e6 !important; color: #e11d48 !important; }
+        .status-failure { background: #fee2e2 !important; color: #991b1b !important; }
+        .status-success { background: #dcfce7 !important; color: #166534 !important; }
+        .status-unknown { background: #f1f5f9 !important; color: #475569 !important; }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #3b82f6;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .action-btn.danger {
+            color: #ef4444;
+        }
+        .action-btn.danger:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        select {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Audit Logs Styles - Clean White Theme (Scoped to #audit-logs) */
+        #audit-logs {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        #audit-logs h2 {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        #audit-logs p {
+            color: #64748b;
+        }
+
+        #audit-logs .audit-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        #audit-logs .audit-kpi {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #audit-logs .audit-kpi:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        #audit-logs .audit-kpi h4 { 
+            color: #64748b; 
+            font-size: 0.85rem; 
+            margin-bottom: 0.5rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            font-weight: 600;
+        }
+
+        #audit-logs .audit-kpi .kpi-value { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: #0f172a; 
+        }
+
+        #audit-logs .audit-kpi.danger .kpi-value { color: #dc2626; }
+        #audit-logs .audit-kpi.warning .kpi-value { color: #d97706; }
+
+        #audit-logs .audit-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            align-items: center;
+        }
+
+        #audit-logs .audit-filters input, 
+        #audit-logs .audit-filters select {
+            padding: 0.6rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        #audit-logs .audit-filters input:focus,
+        #audit-logs .audit-filters select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        #audit-logs .audit-filters input[type="text"] { flex: 1; min-width: 250px; }
+        
+        #audit-logs .audit-filters button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #audit-logs #btn-audit-search { 
+            background: #3b82f6; 
+            color: #ffffff; 
+        }
+        #audit-logs #btn-audit-search:hover {
+            background: #2563eb;
+        }
+
+        #audit-logs #btn-audit-reset { 
+            background: #f1f5f9; 
+            color: #475569; 
+            border: 1px solid #e2e8f0; 
+        }
+        #audit-logs #btn-audit-reset:hover {
+            background: #e2e8f0;
+        }
+
+        #audit-logs .table-container {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        #audit-logs .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #audit-logs .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            padding: 1rem 1.25rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            text-align: left;
+        }
+
+        #audit-logs .data-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            color: #334155;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        #audit-logs .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        #audit-logs .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        #audit-logs .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        #audit-logs .status-success { background: #dcfce7 !important; color: #166534 !important; }
+        #audit-logs .status-failure { background: #fee2e2 !important; color: #991b1b !important; }
+        #audit-logs .status-security { background: #ffe4e6 !important; color: #e11d48 !important; }
+        #audit-logs .status-pending { background: #fef9c3 !important; color: #854d0e !important; }
+        #audit-logs .status-unknown { background: #f1f5f9 !important; color: #475569 !important; }
+
+        #audit-logs .log-action-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #eff6ff !important;
+            color: #1d4ed8 !important;
+            border: 1px solid #bfdbfe;
+            white-space: nowrap;
+        }
+
+        #audit-logs .audit-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        #audit-logs .audit-pagination button {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #334155;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #audit-logs .audit-pagination button:hover:not(:disabled) {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+        #audit-logs .audit-pagination button:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            background: #f8fafc;
+        }
+
+        #audit-logs .audit-pagination span { 
+            color: #475569; 
+            font-size: 0.9rem; 
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="admin-nav-item active" data-target="dashboard">
+                <i class="fas fa-chart-line"></i>
+                Platform Overview
+            </a>
+            <a class="admin-nav-item" data-target="users">
+                <i class="fas fa-users"></i>
+                User Management
+            </a>
+            <a class="admin-nav-item" data-target="recruiters">
+                <i class="fas fa-building-circle-check"></i>
+                Recruiter Approvals
+            </a>
+            <a class="admin-nav-item" data-target="ai-configs">
+                <i class="fas fa-robot"></i>
+                AI Orchestration
+            </a>
+            <a class="admin-nav-item" data-target="audit-logs" id="nav-audit-logs">
+                <i class="fas fa-shield-halved"></i>
+                Activity &amp; Audit Logs
+            </a>
+        </aside>
+
+        <section class="admin-content">
+            <!-- Dashboard Overview -->
+            <div id="dashboard" class="admin-section active">
+                <h2 style="margin-bottom: 1.5rem;">Platform Overview</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <div class="value" id="stat-users">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Recruiters</h3>
+                        <div class="value" id="stat-recruiters">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>AI Providers Active</h3>
+                        <div class="value" id="stat-ai">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>System Health</h3>
+                        <div class="value" style="color: #10b981;">Online</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div id="users" class="admin-section">
+                <h2 style="margin-bottom: 1.5rem;">User Management</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr><td colspan="5" style="text-align:center;">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recruiter Approvals -->
+            <div id="recruiters" class="admin-section">
+                <h2 style="margin-bottom: 1.5rem;">Recruiter Verification</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Recruiter Email</th>
+                                <th>Website</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recruiters-tbody">
+                            <tr><td colspan="5" style="text-align:center;">Loading profiles...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Configuration -->
+            <div id="ai-configs" class="admin-section">
+                <h2 style="margin-bottom: 1.5rem;">AI Provider Orchestration</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Configure the priority sequence and fallback behavior of LLM providers.</p>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ai-tbody">
+                            <tr><td colspan="4" style="text-align:center;">Loading AI configs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Activity & Audit Logs -->
+            <div id="audit-logs" class="admin-section">
+                <h2 style="margin-bottom: 0.5rem;">Activity &amp; Audit Logs</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 0.9rem;">Real-time enterprise audit trail for all platform events. Logs are retained for 90 days.</p>
+
+                <!-- KPI Summary -->
+                <div class="audit-summary-grid">
+                    <div class="audit-kpi">
+                        <h4>Total Logs</h4>
+                        <div class="kpi-value" id="kpi-total">--</div>
+                    </div>
+                    <div class="audit-kpi">
+                        <h4>Logins (24h)</h4>
+                        <div class="kpi-value" id="kpi-logins-24h">--</div>
+                    </div>
+                    <div class="audit-kpi warning">
+                        <h4>Login Failures (24h)</h4>
+                        <div class="kpi-value" id="kpi-failures-24h">--</div>
+                    </div>
+                    <div class="audit-kpi danger">
+                        <h4>Security Events (7d)</h4>
+                        <div class="kpi-value" id="kpi-security-7d">--</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="audit-filters">
+                    <input type="text" id="audit-search" placeholder="Search email, IP, description...">
+                    <select id="audit-role">
+                        <option value="">All Roles</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="RECRUITER">Recruiter</option>
+                        <option value="CANDIDATE">Candidate</option>
+                        <option value="UNKNOWN">Unknown</option>
+                    </select>
+                    <select id="audit-action">
+                        <option value="">All Actions</option>
+                        <option value="LOGIN">Login</option>
+                        <option value="REGISTER_START">Registration</option>
+                        <option value="EMAIL_VERIFIED">Email Verified</option>
+                        <option value="RESET_PASSWORD">Password Reset</option>
+                        <option value="RESUME_UPLOAD">Resume Upload</option>
+                        <option value="JOB_APPLICATION">Job Application</option>
+                        <option value="MOCK_INTERVIEW_START">Interview Start</option>
+                        <option value="MOCK_INTERVIEW_SUBMIT">Interview Submit</option>
+                        <option value="JOB_CREATION">Job Creation</option>
+                        <option value="INTERVIEW_SCHEDULED">Interview Scheduled</option>
+                        <option value="USER_STATUS_UPDATE">User Status Update</option>
+                        <option value="FAILED_LOGIN">Failed Login</option>
+                        <option value="ACCOUNT_LOCKED">Account Locked</option>
+                        <option value="CAPTCHA_VERIFICATION">CAPTCHA Failure</option>
+                    </select>
+                    <select id="audit-status">
+                        <option value="">All Statuses</option>
+                        <option value="SUCCESS">Success</option>
+                        <option value="FAILURE">Failure</option>
+                        <option value="SECURITY_EVENT">Security Event</option>
+                    </select>
+                    <input type="date" id="audit-from" title="From date">
+                    <input type="date" id="audit-to" title="To date">
+                    <button id="btn-audit-search"><i class="fas fa-search"></i> Search</button>
+                    <button id="btn-audit-reset"><i class="fas fa-rotate-left"></i> Reset</button>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="data-table" id="audit-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width:145px">Timestamp</th>
+                                <th>Admin/User</th>
+                                <th>Role</th>
+                                <th style="min-width:160px">Action</th>
+                                <th>Status</th>
+                                <th>IP Address</th>
+                                <th style="min-width:240px">Module / Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-tbody">
+                            <tr><td colspan="7" style="text-align:center;">Select a filter and click Search, or scroll to load recent logs.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="audit-pagination">
+                    <button id="btn-audit-prev" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+                    <span id="audit-page-info">Page 1</span>
+                    <button id="btn-audit-next" disabled>Next <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

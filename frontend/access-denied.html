@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied - SmartATS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-primary);
+        }
+        .error-icon {
+            font-size: 5rem;
+            color: var(--danger-color, #dc3545);
+            margin-bottom: 1.5rem;
+        }
+        .error-title {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <i class="fas fa-shield-halved error-icon"></i>
+        <h1 class="error-title">Access Denied</h1>
+        <p class="error-message">You do not have the required permissions to view this page. This area is restricted to administrators.</p>
+        <div class="error-actions">
+            <a href="index.html" class="btn btn-outline">Return to Home</a>
+            <a href="login.html" class="btn btn-primary" onclick="window.api.logout();">Sign in as Admin</a>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

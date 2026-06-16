@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+    <script src="js/analytics-charts.js" defer></script>
+    <script src="js/candidate-dashboard.js" defer></script>
+</head>
+<body data-page="dashboard" data-nav-current="dashboard">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge" id="dashboard-badge">Role Dashboard</p>
+                    <h1 id="dashboard-title">Welcome User</h1>
+                    <p id="dashboard-subtitle" class="hero-text">
+                        Loading your role-based workspace...
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Signed In As</span>
+                        <strong id="dashboard-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Role</span>
+                        <strong id="dashboard-role-label">-</strong>
+                    </article>
+                </div>
+            </section>
+
+            <section id="dashboard-role-note" class="panel state-box hidden"></section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Workspace</p>
+                        <h2 id="dashboard-section-title">Your next actions</h2>
+                    </div>
+                    <p id="dashboard-section-copy" class="section-copy">
+                        Dashboard actions will appear here based on your account role.
+                    </p>
+                </div>
+
+                <div id="dashboard-actions" class="action-grid"></div>
+            </section>
+
+            <section id="candidate-analytics-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Insights Overview</p>
+                        <h2>Candidate intelligence snapshot</h2>
+                    </div>
+                    <p class="section-copy">
+                        SmartATS combines ATS history, application movement, job-match scoring, and interview performance into one analytics view.
+                    </p>
+                </div>
+
+                <div id="candidate-analytics-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Loading candidate analytics...</span>
+                </div>
+
+                <div id="candidate-metrics-grid" class="metric-grid"></div>
+            </section>
+
+            <section class="dashboard-grid analytics-dashboard-grid">
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">ATS History</p>
+                            <h2>ATS score progression</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-ats-history-chart" class="analytics-chart-card"></div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Application Status</p>
+                            <h2>Pipeline distribution</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-status-donut" class="analytics-chart-card"></div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Interview Trend</p>
+                            <h2>Interview score history</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-interview-history-chart" class="analytics-chart-card"></div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Skill Match</p>
+                            <h2>Role-fit trend</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-skill-match-chart" class="analytics-chart-card"></div>
+                </article>
+            </section>
+
+            <section class="info-grid">
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">ATS Analytics</p>
+                            <h2>Breakdown and heatmap</h2>
+                        </div>
+                    </div>
+                    <div class="analytics-two-up">
+                        <div id="candidate-ats-breakdown-chart" class="analytics-chart-card"></div>
+                        <div id="candidate-ats-heatmap" class="analytics-chart-card"></div>
+                    </div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Interview Analytics</p>
+                            <h2>Radar + communication</h2>
+                        </div>
+                    </div>
+                    <div class="analytics-two-up">
+                        <div id="candidate-radar-chart" class="analytics-chart-card"></div>
+                        <div id="candidate-communication-chart" class="analytics-chart-card"></div>
+                    </div>
+                    <div style="margin-top:1rem">
+                        <div id="candidate-technical-chart" class="analytics-chart-card"></div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="info-grid">
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Recent Runs</p>
+                            <h2>ATS improvement tracking</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-ats-history-list" class="analytics-history-list"></div>
+                </article>
+
+                <article class="panel analytics-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Recent Interviews</p>
+                            <h2>Interview history</h2>
+                        </div>
+                    </div>
+                    <div id="candidate-interview-history-list" class="analytics-history-list"></div>
+                </article>
+            </section>
+
+            <section class="panel analytics-panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Smart Insights</p>
+                        <h2>Improvement recommendations</h2>
+                    </div>
+                </div>
+                <div id="candidate-insights-list" class="analytics-insight-list"></div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

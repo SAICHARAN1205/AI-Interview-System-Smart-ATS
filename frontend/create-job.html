@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job | AI Hiring Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="js/api.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/jobs.js" defer></script>
+</head>
+<body data-page="create-job" data-nav-current="create-job">
+    <div class="page-wrapper">
+        <header data-navbar-root></header>
+
+        <main class="page-stack">
+            <section class="page-hero">
+                <div>
+                    <p class="badge">Recruiter Jobs</p>
+                    <h1>Create a job and manage recruiter-owned roles.</h1>
+                    <p class="hero-text">
+                        Use the backend create job API to post openings with salary and role / skills information, then review your jobs list directly underneath.
+                    </p>
+                </div>
+
+                <div class="hero-summary">
+                    <article class="summary-card">
+                        <span class="summary-label">Recruiter</span>
+                        <strong id="create-job-user-email">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">Role</span>
+                        <strong id="create-job-role-label">-</strong>
+                    </article>
+                    <article class="summary-card">
+                        <span class="summary-label">My Jobs</span>
+                        <strong id="create-job-total-jobs">0</strong>
+                        <p class="subtle-text">Recruiter-owned jobs loaded from the backend.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="create-job-page-message" class="panel message-box hidden" role="status" aria-live="polite"></section>
+
+            <section class="info-grid">
+                <section class="panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Create Job</p>
+                            <h2>New posting</h2>
+                        </div>
+                        <p class="section-copy">
+                            Validation feedback appears inline and successful submissions refresh the My Jobs section automatically.
+                        </p>
+                    </div>
+
+                    <form id="create-job-form" class="form-layout split-form" novalidate>
+                        <h3 class="form-section-title">Basic Details</h3>
+                        <label class="field field-half">
+                            <span>Job Title</span>
+                            <input type="text" id="job-title" name="title" placeholder="Senior Java Developer" required>
+                            <small id="job-title-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-half">
+                            <span>Company</span>
+                            <input type="text" id="job-company" name="company" placeholder="AI Hiring Platform" required>
+                            <small id="job-company-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-half">
+                            <span>Location</span>
+                            <input type="text" id="job-location" name="location" placeholder="Bangalore / Remote">
+                            <small id="job-location-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-half">
+                            <span>Salary Range</span>
+                            <input type="text" id="job-salary" name="salary" placeholder="12 LPA - 18 LPA" required>
+                            <small id="job-salary-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-half">
+                            <span>Application Deadline</span>
+                            <input type="date" id="job-deadline" name="applicationDeadline">
+                            <small id="job-deadline-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-half">
+                            <span>Number of Openings</span>
+                            <input type="number" id="job-openings" name="openingsCount" placeholder="e.g. 5" min="1">
+                            <small id="job-openings-error" class="field-error"></small>
+                        </label>
+
+                        <h3 class="form-section-title" style="margin-top:1rem; width:100%;">Job Classification</h3>
+                        <label class="field field-third">
+                            <span>Job Type</span>
+                            <select id="job-type" name="jobType">
+                                <option value="">Select Type</option>
+                                <option value="FULL_TIME">Full Time</option>
+                                <option value="PART_TIME">Part Time</option>
+                                <option value="INTERNSHIP">Internship</option>
+                                <option value="CONTRACT">Contract</option>
+                            </select>
+                        </label>
+                        <label class="field field-third">
+                            <span>Work Mode</span>
+                            <select id="job-work-mode" name="workMode">
+                                <option value="">Select Mode</option>
+                                <option value="REMOTE">Remote</option>
+                                <option value="ONSITE">Onsite</option>
+                                <option value="HYBRID">Hybrid</option>
+                            </select>
+                        </label>
+                        <label class="field field-third">
+                            <span>Experience Level</span>
+                            <select id="job-experience-level" name="experienceLevel">
+                                <option value="">Select Level</option>
+                                <option value="FRESHER">Fresher</option>
+                                <option value="EXPERIENCED">Experienced</option>
+                            </select>
+                        </label>
+
+                        <div id="fresher-section" class="form-conditional-section" style="display:none; width:100%; display:flex; flex-wrap:wrap; gap:1.5rem; background:#f9f9f9; padding:1rem; border-radius:8px; margin-top:0.5rem;">
+                            <label class="field field-third" style="margin:0;">
+                                <span>Minimum Percentage</span>
+                                <input type="number" id="job-min-percentage" name="minimumPercentage" placeholder="0-100" min="0" max="100" step="0.1">
+                            </label>
+                            <label class="field field-third" style="margin:0;">
+                                <span>Minimum CGPA</span>
+                                <input type="number" id="job-min-cgpa" name="minimumCGPA" placeholder="0-10" min="0" max="10" step="0.1">
+                            </label>
+                            <label class="field field-third" style="margin:0;">
+                                <span>Minimum Education</span>
+                                <input type="text" id="job-education-fresher" name="minimumEducation" placeholder="e.g. BTech, MCA">
+                            </label>
+                        </div>
+
+                        <div id="experienced-section" class="form-conditional-section" style="display:none; width:100%; display:flex; flex-wrap:wrap; gap:1.5rem; background:#f9f9f9; padding:1rem; border-radius:8px; margin-top:0.5rem;">
+                            <label class="field field-half" style="margin:0;">
+                                <span>Minimum Experience (Years)</span>
+                                <input type="number" id="job-min-experience" name="minimumExperienceYears" placeholder="e.g. 3" min="0">
+                            </label>
+                            <label class="field field-half" style="margin:0;">
+                                <span>Minimum Education</span>
+                                <input type="text" id="job-education-experienced" name="minimumEducation" placeholder="e.g. BTech, MCA">
+                            </label>
+                        </div>
+
+                        <h3 class="form-section-title" style="margin-top:1rem; width:100%;">Skills & Requirements</h3>
+                        <label class="field field-third">
+                            <span>Core Skills (for Matching)</span>
+                            <input type="text" id="job-skills" name="skills" placeholder="Java, Spring Boot" required>
+                            <small id="job-skills-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-third">
+                            <span>Required Skills</span>
+                            <input type="text" id="job-required-skills" name="requiredSkills" placeholder="Must-have skills">
+                        </label>
+                        <label class="field field-third">
+                            <span>Preferred Skills</span>
+                            <input type="text" id="job-preferred-skills" name="preferredSkills" placeholder="Good-to-have skills">
+                        </label>
+
+                        <label class="field field-wide">
+                            <span>General Requirements</span>
+                            <textarea id="job-requirements" name="requirements" rows="3" placeholder="List required experience, tools, and must-have qualifications." required></textarea>
+                            <small id="job-requirements-error" class="field-error"></small>
+                        </label>
+                        <label class="field field-wide">
+                            <span>Job Description</span>
+                            <textarea id="job-description" name="description" rows="5" placeholder="Describe the role, responsibilities, and hiring expectations." required></textarea>
+                            <small id="job-description-error" class="field-error"></small>
+                        </label>
+
+                        <h3 class="form-section-title" style="margin-top:1rem; width:100%;">Additional Info</h3>
+                        <label class="field field-half">
+                            <span>Company Description</span>
+                            <textarea id="job-company-desc" name="companyDescription" rows="2" placeholder="About the company"></textarea>
+                        </label>
+                        <label class="field field-half">
+                            <span>Benefits / Perks</span>
+                            <textarea id="job-benefits" name="benefits" rows="2" placeholder="Health insurance, Remote work, etc."></textarea>
+                        </label>
+                        <label class="field field-half">
+                            <span>Notice Period Preference</span>
+                            <input type="text" id="job-notice-period" name="noticePeriodPreference" placeholder="e.g. Immediate, 30 days">
+                        </label>
+                        <label class="field field-half">
+                            <span>Recruiter Notes (Internal)</span>
+                            <textarea id="job-recruiter-notes" name="recruiterNotes" rows="2" placeholder="Private notes visible only to recruiters"></textarea>
+                        </label>
+
+                        <div id="create-job-message" class="message-box hidden" role="status" aria-live="polite"></div>
+
+                        <button type="submit" id="create-job-button" class="btn btn-primary">Submit Job</button>
+                    </form>
+                </section>
+
+                <aside class="sidebar-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">Checklist</p>
+                            <h2>Before you publish</h2>
+                        </div>
+                    </div>
+                    <ul class="helper-list">
+                        <li>Use a clear job title recruiters and candidates both understand immediately.</li>
+                        <li>Keep the salary field explicit so your My Jobs cards stay informative.</li>
+                        <li>List the strongest role / skills keywords to help downstream matching and scoring.</li>
+                        <li>After posting, head to Applicants to shortlist or reject candidates quickly.</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section id="my-jobs-section" class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">My Jobs</p>
+                        <h2>Recruiter-owned job cards</h2>
+                    </div>
+                    <p class="section-copy">
+                        Each card shows the title, company, salary, and applicants count when available.
+                    </p>
+                </div>
+
+                <div id="recruiter-jobs-loading" class="loading-row hidden">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Loading your jobs...</span>
+                </div>
+
+                <div id="recruiter-jobs-empty" class="hidden"></div>
+                <div id="recruiter-jobs-grid" class="jobs-grid"></div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

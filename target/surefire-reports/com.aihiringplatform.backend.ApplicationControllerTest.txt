@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.aihiringplatform.backend.ApplicationControllerTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.471 s -- in com.aihiringplatform.backend.ApplicationControllerTest

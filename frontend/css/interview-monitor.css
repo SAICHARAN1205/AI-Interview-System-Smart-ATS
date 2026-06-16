@@ -1,0 +1,188 @@
+/* ═══════════════════════════════════════════════════════════════
+   Interview Monitoring System — Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Device Check Card ─────────────────────────────────────── */
+.im-device-card { display: flex; flex-direction: column; gap: 0.75rem; }
+.im-device-check-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.im-device-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; }
+.im-device-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #6b7280; flex-shrink: 0;
+    transition: background 0.3s;
+}
+.im-device-dot.im-dot-ok { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,.5); }
+.im-device-dot.im-dot-fail { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.5); }
+.im-device-label { color: #6b7280; font-size: 0.82rem; }
+.btn-sm { font-size: 0.82rem; padding: 0.35rem 0.9rem; }
+
+/* ── Camera Preview ────────────────────────────────────────── */
+.im-camera-preview-wrap {
+    position: relative; border-radius: 10px; overflow: hidden;
+    background: #0f172a; margin-top: 0.5rem; aspect-ratio: 4/3;
+    max-height: 180px;
+}
+.im-camera-preview-wrap video {
+    width: 100%; height: 100%; object-fit: cover;
+    transform: scaleX(-1);
+}
+.im-face-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+}
+
+/* ── Mic Level Bar ─────────────────────────────────────────── */
+.im-mic-level-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; }
+.im-mic-bar {
+    flex: 1; height: 8px; border-radius: 8px;
+    background: rgba(100,116,139,.15); overflow: hidden;
+}
+.im-mic-fill {
+    height: 100%; width: 0%; border-radius: 8px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    transition: width 0.1s;
+}
+.im-mic-bar-vertical {
+    width: 8px; height: 80px; flex: none;
+    border-radius: 8px; background: rgba(100,116,139,.15);
+    overflow: hidden; display: flex; flex-direction: column-reverse;
+}
+.im-mic-bar-vertical .im-mic-fill { width: 100%; height: 0%; }
+
+/* ── Recording Badge ───────────────────────────────────────── */
+.im-recording-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: rgba(239,68,68,.12); color: #ef4444;
+    font-weight: 600; font-size: 0.78rem; padding: 0.25rem 0.65rem;
+    border-radius: 20px; letter-spacing: 0.04em;
+    animation: im-rec-pulse 1.5s ease-in-out infinite;
+}
+.im-rec-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+}
+@keyframes im-rec-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ── Warning Toast ─────────────────────────────────────────── */
+.im-warning-toast {
+    position: fixed; top: 80px; right: 24px; z-index: 9999;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #fbbf24; border: 1px solid rgba(251,191,36,.25);
+    padding: 0.75rem 1.25rem; border-radius: 12px;
+    font-size: 0.9rem; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    transform: translateX(120%); opacity: 0;
+    transition: transform 0.4s cubic-bezier(.22,1,.36,1), opacity 0.4s;
+}
+.im-warning-toast.im-toast-visible {
+    transform: translateX(0); opacity: 1;
+}
+.im-warning-icon { font-size: 1.2rem; }
+
+/* ── Enhanced Live Grid (3 cols) ───────────────────────────── */
+.im-live-grid-enhanced {
+    grid-template-columns: 1fr 1fr 220px !important;
+}
+@media (max-width: 1024px) {
+    .im-live-grid-enhanced { grid-template-columns: 1fr 1fr !important; }
+    .im-monitoring-sidebar { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .im-webcam-container { grid-column: 1 / -1; max-height: 180px; }
+}
+@media (max-width: 640px) {
+    .im-live-grid-enhanced { grid-template-columns: 1fr !important; }
+}
+
+/* ── Monitoring Sidebar ────────────────────────────────────── */
+.im-monitoring-sidebar {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    background: rgba(15,23,42,.6); border-radius: 12px;
+    padding: 0.75rem; border: 1px solid rgba(100,116,139,.15);
+}
+.im-webcam-container {
+    position: relative; border-radius: 10px; overflow: hidden;
+    background: #0f172a; aspect-ratio: 4/3;
+}
+.im-webcam-container video {
+    width: 100%; height: 100%; object-fit: cover;
+    transform: scaleX(-1);
+}
+.im-cam-overlay-msg {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(15,23,42,.8); color: #ef4444;
+    font-weight: 600; font-size: 0.85rem; text-align: center;
+}
+.im-sidebar-mic {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0 0.25rem;
+}
+.im-monitoring-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+}
+.im-stat {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(100,116,139,.08); border-radius: 8px;
+    padding: 0.5rem; text-align: center;
+}
+.im-stat-val { font-size: 1.3rem; font-weight: 700; color: #f8fafc; }
+.im-stat-lbl { font-size: 0.72rem; color: #94a3b8; margin-top: 0.15rem; }
+
+/* ── Voice Controls ────────────────────────────────────────── */
+.im-voice-controls {
+    display: flex; align-items: center; gap: 0.5rem;
+    flex-wrap: wrap; margin-top: 0.5rem;
+}
+.im-voice-btn { display: inline-flex; align-items: center; gap: 0.3rem; }
+.im-mic-icon { font-size: 1.05rem; }
+.im-mic-active { color: #ef4444; }
+.im-voice-status {
+    font-size: 0.8rem; color: #94a3b8; font-style: italic;
+}
+
+/* ── Transcript Panel ──────────────────────────────────────── */
+.im-transcript-panel {
+    background: rgba(100,116,139,.06); border-radius: 10px;
+    padding: 0.75rem 1rem; margin-top: 0.5rem;
+    border: 1px solid rgba(100,116,139,.12);
+    max-height: 120px; overflow-y: auto;
+}
+.im-transcript-text {
+    font-size: 0.88rem; line-height: 1.5; color: #cbd5e1;
+    white-space: pre-wrap;
+}
+.im-transcript-text .im-interim {
+    color: #64748b; font-style: italic;
+}
+
+/* ── Results: Extra Score Cards ────────────────────────────── */
+.im-results-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; }
+.im-score-accent { border-left: 3px solid #818cf8; }
+
+/* ── Integrity Section ─────────────────────────────────────── */
+.im-integrity-section {
+    background: rgba(100,116,139,.05); border-radius: 14px;
+    padding: 1.25rem 1.5rem; margin-top: 1rem;
+    border: 1px solid rgba(100,116,139,.12);
+}
+.im-integrity-section h3 {
+    font-size: 1rem; margin-bottom: 0.75rem; color: #f1f5f9;
+}
+.im-integrity-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+}
+.im-integrity-card {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    background: rgba(15,23,42,.4); border-radius: 10px;
+    padding: 0.75rem; text-align: center;
+}
+.im-integrity-label { font-size: 0.78rem; color: #94a3b8; }
+.im-integrity-card strong { font-size: 1.2rem; color: #f1f5f9; }
+.im-integrity-badge {
+    display: inline-block; padding: 0.25rem 0.75rem;
+    border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+}
+.im-badge-clean { background: rgba(34,197,94,.12); color: #22c55e; }
+.im-badge-flagged { background: rgba(251,191,36,.12); color: #fbbf24; }
+.im-badge-suspicious { background: rgba(239,68,68,.12); color: #ef4444; }
