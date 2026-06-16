@@ -1,5 +1,5 @@
 (function () {
-    const DEFAULT_BASE_URL = "http://localhost:8080";
+    const DEFAULT_BASE_URL = "https://ai-interview-system-smart-ats.onrender.com";
     const API_BASE_URL_KEY = "ai_hiring_platform_api_base_url";
     const TOKEN_KEY = "ai_hiring_platform_token";
     const REFRESH_TOKEN_KEY = "ai_hiring_platform_refresh_token";
