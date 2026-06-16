@@ -72,80 +72,13 @@
         }
     }
 
-    function getCandidateBaseURLs() {
-        const candidates = [];
-        const configuredBaseURL = normalizeBaseURL(window.API_BASE_URL || readStorage(API_BASE_URL_KEY));
-        const currentOrigin = normalizeBaseURL(window.location.origin);
-
-        if (configuredBaseURL) {
-            candidates.push(configuredBaseURL);
-        }
-
-        candidates.push("http://localhost:8080");
-        candidates.push("http://localhost:8081");
-        candidates.push("http://127.0.0.1:8080");
-        candidates.push("http://127.0.0.1:8081");
-
-        if (currentOrigin && !/^file:/i.test(currentOrigin)) {
-            candidates.push(currentOrigin);
-        }
-
-        return Array.from(new Set(candidates.filter(Boolean)));
-    }
-
-    async function probeBaseURL(candidate) {
-        try {
-            const response = await fetch(`${candidate}/api/test`, {
-                method: "GET",
-                headers: {
-                    Accept: "text/plain",
-                },
-            });
-
-            return response.ok;
-        } catch (error) {
-            return false;
-        }
-    }
-
     function rememberBaseURL(baseURL) {
         activeBaseURL = normalizeBaseURL(baseURL);
         writeStorage(API_BASE_URL_KEY, activeBaseURL);
     }
 
     async function discoverBaseURL(forceRefresh) {
-        if (!forceRefresh && activeBaseURL) {
-            return activeBaseURL;
-        }
-
-        if (!forceRefresh && discoveryPromise) {
-            return discoveryPromise;
-        }
-
-        const discoveryTask = (async function () {
-            const candidates = getCandidateBaseURLs();
-
-            for (const candidate of candidates) {
-                if (await probeBaseURL(candidate)) {
-                    rememberBaseURL(candidate);
-                    return candidate;
-                }
-            }
-
-            const fallbackBaseURL = candidates[0] || DEFAULT_BASE_URL;
-            activeBaseURL = fallbackBaseURL;
-            return fallbackBaseURL;
-        })();
-
-        discoveryPromise = discoveryTask;
-
-        try {
-            return await discoveryTask;
-        } finally {
-            if (discoveryPromise === discoveryTask) {
-                discoveryPromise = null;
-            }
-        }
+        return DEFAULT_BASE_URL;
     }
 
     function getToken() {
@@ -392,27 +325,17 @@
 
         let response;
         let lastError = null;
-        const primaryBaseURL = await discoverBaseURL(false);
-        const candidateBaseURLs = [primaryBaseURL].concat(
-            getCandidateBaseURLs().filter(function (candidate) {
-                return candidate !== primaryBaseURL;
-            })
-        );
+        const baseURL = DEFAULT_BASE_URL;
 
-        for (const candidate of candidateBaseURLs) {
-            try {
-                response = await fetchWithTimeout(`${candidate}${endpoint}`, options, requestConfig.timeoutMs);
-                rememberBaseURL(candidate);
-                break;
-            } catch (error) {
-                lastError = error;
-                activeBaseURL = null;
-            }
+        try {
+            response = await fetchWithTimeout(`${baseURL}${endpoint}`, options, requestConfig.timeoutMs);
+        } catch (error) {
+            lastError = error;
         }
 
         if (!response) {
             const networkError = new Error(
-                "Unable to connect to the server. Make sure the backend is running on localhost:8080 or localhost:8081."
+                "Unable to connect to the server. Please check your internet connection."
             );
             networkError.isNetworkError = true;
             networkError.cause = lastError;
@@ -430,7 +353,7 @@
                 
                 isRefreshing = true;
                 try {
-                    const refreshURL = primaryBaseURL || candidateBaseURLs[0] || DEFAULT_BASE_URL;
+                    const refreshURL = DEFAULT_BASE_URL;
                     const refreshResponse = await fetchWithTimeout(`${refreshURL}/api/auth/refresh`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -597,10 +520,10 @@
 
     window.api = {
         get baseURL() {
-            return activeBaseURL || normalizeBaseURL(readStorage(API_BASE_URL_KEY)) || DEFAULT_BASE_URL;
+            return DEFAULT_BASE_URL;
         },
         get API_URL() {
-            return activeBaseURL || normalizeBaseURL(readStorage(API_BASE_URL_KEY)) || DEFAULT_BASE_URL;
+            return DEFAULT_BASE_URL;
         },
         get: function (endpoint) {
             return request("GET", endpoint);
