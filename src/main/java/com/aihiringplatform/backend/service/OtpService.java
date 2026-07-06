@@ -60,24 +60,11 @@ public class OtpService {
         token.setType(type);
         otpRepository.save(token);
 
-        // Send email ONLY after transaction successfully commits
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    if (type == OtpType.REGISTRATION) {
-                        emailService.sendRegistrationOtp(email, otpCode);
-                    } else if (type == OtpType.FORGOT_PASSWORD) {
-                        emailService.sendForgotPasswordOtp(email, otpCode);
-                    }
-                }
-            });
-        } else {
-            if (type == OtpType.REGISTRATION) {
-                emailService.sendRegistrationOtp(email, otpCode);
-            } else if (type == OtpType.FORGOT_PASSWORD) {
-                emailService.sendForgotPasswordOtp(email, otpCode);
-            }
+        // Send email synchronously to ensure transaction rolls back if email fails
+        if (type == OtpType.REGISTRATION) {
+            emailService.sendRegistrationOtp(email, otpCode);
+        } else if (type == OtpType.FORGOT_PASSWORD) {
+            emailService.sendForgotPasswordOtp(email, otpCode);
         }
         
         logger.info("OTP generated for email: {}, type: {}", email, type);

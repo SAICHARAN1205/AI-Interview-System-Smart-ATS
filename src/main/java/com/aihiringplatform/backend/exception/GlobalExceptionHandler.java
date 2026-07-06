@@ -34,8 +34,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleResponseStatusException(ResponseStatusException ex) {
         if (ex.getStatusCode().is5xxServerError()) {
             logger.error("Server Error: {}", ex.getReason(), ex);
+            String message = ex.getReason() != null ? ex.getReason() : "Internal server error";
             return ResponseEntity.status(ex.getStatusCode())
-                    .body(ApiResponse.error("Something went wrong. Please try again.", "SERVER_ERROR"));
+                    .body(ApiResponse.error(message, "SERVER_ERROR"));
         } else {
             logger.warn("Client Error {}: {}", ex.getStatusCode(), ex.getReason());
             return ResponseEntity.status(ex.getStatusCode())

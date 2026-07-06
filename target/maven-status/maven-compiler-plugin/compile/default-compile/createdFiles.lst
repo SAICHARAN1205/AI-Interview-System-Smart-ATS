@@ -27,7 +27,6 @@ com\aihiringplatform\backend\service\ai\AIProvider.class
 com\aihiringplatform\backend\config\GroqProperties.class
 com\aihiringplatform\backend\dto\InterviewSessionResponse.class
 com\aihiringplatform\backend\repository\OtpRepository.class
-com\aihiringplatform\backend\service\OtpService$1.class
 com\aihiringplatform\backend\service\InterviewScheduleService.class
 com\aihiringplatform\backend\repository\ResumeRepository.class
 com\aihiringplatform\backend\entity\Role.class

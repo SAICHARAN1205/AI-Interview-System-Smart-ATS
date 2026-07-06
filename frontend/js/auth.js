@@ -397,23 +397,11 @@
                 window.location.href = `verify-email.html?email=${encodeURIComponent(payload.email)}&sessionId=${encodeURIComponent(sessionId)}`;
             }, 1500);
         } catch (error) {
-            const errorMsg = error.message || "Registration failed. Please try again.";
+            const message = error.isNetworkError
+                ? "Unable to connect to the server. Please check your internet connection."
+                : (error.message || "Registration failed. Please try again.");
             
-            // Map common backend errors
-            if (errorMsg.includes("429") || errorMsg.toLowerCase().includes("too many requests") || errorMsg.includes("60 seconds")) {
-                setMessage(messageBox, "Please wait 60 seconds before requesting a new OTP.", "error");
-            } else if (errorMsg.includes("registered")) {
-                setMessage(messageBox, "Email already registered. Please login.", "error");
-            } else if (errorMsg.includes("Weak")) {
-                setMessage(messageBox, "Weak password. Please check the requirements.", "error");
-            } else if (errorMsg.includes("CAPTCHA")) {
-                setMessage(messageBox, "Captcha verification failed. Please try again.", "error");
-            } else if (errorMsg.includes("Server error")) {
-                setMessage(messageBox, "Server error. Please try again later.", "error");
-            } else {
-                setMessage(messageBox, errorMsg, "error");
-            }
-            
+            setMessage(messageBox, message, "error");
             loadCaptcha("register"); // reload on error
         } finally {
             setButtonLoading(registerButton, "Registering...", false);

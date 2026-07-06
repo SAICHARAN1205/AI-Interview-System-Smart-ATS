@@ -59,6 +59,7 @@ public class UserService {
 
     @Transactional
     public java.util.Map<String, Object> registerUser(User user) {
+        logger.info("Registration request received for email: {}", user.getEmail());
         validatePassword(user.getPassword());
 
         java.util.Optional<User> existingUserOpt = userRepository.findByEmail(user.getEmail());
@@ -144,6 +145,7 @@ public class UserService {
             user.setAccountStatus(UserStatus.ACTIVE);
             
             userRepository.save(user);
+            logger.info("User successfully saved to database for email: {}", email);
             pendingRegistrationRepository.delete(pending);
 
             activityLogService.logSuccess(email, pending.getRole() != null ? pending.getRole().name() : "UNKNOWN", "EMAIL_VERIFIED", "User successfully verified email via OTP", null);
