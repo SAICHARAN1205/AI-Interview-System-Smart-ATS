@@ -1,5 +1,7 @@
 (function () {
     const DEFAULT_BASE_URL = "https://ai-interview-system-smart-ats.onrender.com";
+    // const DEFAULT_BASE_URL = "http://localhost:8080";
+
     const API_BASE_URL_KEY = "ai_hiring_platform_api_base_url";
     const TOKEN_KEY = "ai_hiring_platform_token";
     const REFRESH_TOKEN_KEY = "ai_hiring_platform_refresh_token";
@@ -110,18 +112,18 @@
     function setRole(role) {
         const isSession = role === 'ADMIN';
         writeStorage(ROLE_KEY, role, isSession);
-        
+
         if (isSession) {
             // Move existing tokens to sessionStorage if we are setting ADMIN role
             const currentToken = readStorage(TOKEN_KEY);
             const currentRefresh = readStorage(REFRESH_TOKEN_KEY);
             const currentUser = readStorage(USER_KEY);
-            
+
             if (currentToken) writeStorage(TOKEN_KEY, currentToken, true);
             if (currentRefresh) writeStorage(REFRESH_TOKEN_KEY, currentRefresh, true);
             if (currentUser) writeStorage(USER_KEY, currentUser, true);
         }
-        
+
         emitAuthChange();
     }
 
@@ -346,11 +348,11 @@
             const refreshToken = readStorage(REFRESH_TOKEN_KEY);
             if (refreshToken) {
                 if (isRefreshing) {
-                    return new Promise(function(resolve, reject) {
+                    return new Promise(function (resolve, reject) {
                         refreshQueue.push({ resolve, reject, endpoint, options, config });
                     });
                 }
-                
+
                 isRefreshing = true;
                 try {
                     const refreshURL = DEFAULT_BASE_URL;
@@ -359,28 +361,28 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ refreshToken: refreshToken })
                     }, 10000);
-                    
+
                     if (refreshResponse.ok) {
                         const refreshData = await refreshResponse.json();
                         setToken(refreshData.token, refreshData.refreshToken);
-                        
+
                         options.headers.Authorization = `Bearer ${refreshData.token}`;
-                        
+
                         isRefreshing = false;
                         const queue = refreshQueue.slice();
                         refreshQueue = [];
-                        queue.forEach(function(req) {
+                        queue.forEach(function (req) {
                             req.options.headers.Authorization = `Bearer ${refreshData.token}`;
                             executeRequest(req.endpoint, req.options, req.config).then(req.resolve).catch(req.reject);
                         });
-                        
+
                         return executeRequest(endpoint, options, config);
                     } else {
                         throw new Error("Refresh failed");
                     }
                 } catch (e) {
                     isRefreshing = false;
-                    refreshQueue.forEach(function(req) { req.reject(new Error("Session expired. Please log in again.")); });
+                    refreshQueue.forEach(function (req) { req.reject(new Error("Session expired. Please log in again.")); });
                     refreshQueue = [];
                     clearAuth();
                     window.location.href = "login.html?session_expired=true";
@@ -455,7 +457,7 @@
             // Do not override server-provided auth messages like "Incorrect password" or "Incorrect CAPTCHA"
             // if we are hitting auth endpoints
             const isAuthEndpoint = endpoint.includes("/api/auth/");
-            
+
             if (!isAuthEndpoint) {
                 if (response.status === 403 || errorMessage === "Forbidden") {
                     errorMessage = "You do not have permission to access this resource.";
@@ -467,8 +469,8 @@
                     errorMessage = "Server error. Please try later.";
                 }
             } else if (response.status === 401 && !payload) {
-                 // Fallback if auth endpoint gives 401 without message
-                 errorMessage = "Invalid credentials or unauthorized request.";
+                // Fallback if auth endpoint gives 401 without message
+                errorMessage = "Invalid credentials or unauthorized request.";
             }
 
             const requestError = new Error(errorMessage);
@@ -506,7 +508,7 @@
             writeStorage(profileKey, JSON.stringify(profile));
             try {
                 window.dispatchEvent(new CustomEvent("resume-uploaded", { detail: { resume: resume } }));
-            } catch (e) {}
+            } catch (e) { }
             return resume;
         } catch (error) {
             const profileKey = "ai_hiring_platform_profile";
