@@ -530,8 +530,8 @@
         get: function (endpoint) {
             return request("GET", endpoint);
         },
-        post: function (endpoint, body) {
-            return request("POST", endpoint, body);
+        post: function (endpoint, body, config) {
+            return request("POST", endpoint, body, config);
         },
         put: function (endpoint, body) {
             return request("PUT", endpoint, body);

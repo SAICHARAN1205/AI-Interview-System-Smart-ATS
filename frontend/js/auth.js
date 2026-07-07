@@ -387,7 +387,7 @@
         };
 
         try {
-            const response = await window.api.post("/api/users/register", payload);
+            const response = await window.api.post("/api/users/register", payload, { timeoutMs: 90000 });
             const sessionId = response ? response.sessionId : "";
             storeVerificationSession(payload.email, sessionId);
             
@@ -397,9 +397,12 @@
                 window.location.href = `verify-email.html?email=${encodeURIComponent(payload.email)}&sessionId=${encodeURIComponent(sessionId)}`;
             }, 1500);
         } catch (error) {
-            const message = error.isNetworkError
-                ? "Unable to connect to the server. Please check your internet connection."
-                : (error.message || "Registration failed. Please try again.");
+            let message;
+            if (error.isNetworkError) {
+                message = "Server is starting up or temporarily unavailable. Please wait a moment and try again.";
+            } else {
+                message = error.message || "Registration failed. Please try again.";
+            }
             
             setMessage(messageBox, message, "error");
             loadCaptcha("register"); // reload on error
