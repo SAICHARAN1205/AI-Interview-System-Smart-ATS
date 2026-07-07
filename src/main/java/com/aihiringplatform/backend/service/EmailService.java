@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import com.aihiringplatform.backend.entity.OtpType;
 
 @Service
 public class EmailService {
@@ -46,6 +48,19 @@ public class EmailService {
             logger.info("MAIL_PASSWORD length={}", password.length());
         }
         logger.info("====================================");
+    }
+
+    @Async
+    public void sendOtpEmailAsync(String email, String otpCode, OtpType type) {
+        try {
+            if (type == OtpType.REGISTRATION) {
+                sendRegistrationOtp(email, otpCode);
+            } else if (type == OtpType.FORGOT_PASSWORD) {
+                sendForgotPasswordOtp(email, otpCode);
+            }
+        } catch (Exception e) {
+            logger.error("Async OTP email dispatch failed for {}: {}", email, e.getMessage());
+        }
     }
 
     public void sendRegistrationOtp(String to, String otp) {

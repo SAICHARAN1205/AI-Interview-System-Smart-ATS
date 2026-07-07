@@ -60,24 +60,16 @@ public class OtpService {
         token.setType(type);
         otpRepository.save(token);
 
-        // Send email asynchronously so the HTTP response is not blocked by SMTP latency.
-        // This is critical for Render/cloud deployments where SMTP can take 10-30+ seconds.
-        sendOtpEmailAsync(email, otpCode, type);
+        // Send email AFTER the transaction commits so the OTP is guaranteed to be in DB.
+        // EmailService is a separate Spring bean, so @Async proxy works correctly.
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                emailService.sendOtpEmailAsync(email, otpCode, type);
+            }
+        });
         
         logger.info("OTP generated for email: {}, type: {}", email, type);
-    }
-
-    @org.springframework.scheduling.annotation.Async
-    public void sendOtpEmailAsync(String email, String otpCode, OtpType type) {
-        try {
-            if (type == OtpType.REGISTRATION) {
-                emailService.sendRegistrationOtp(email, otpCode);
-            } else if (type == OtpType.FORGOT_PASSWORD) {
-                emailService.sendForgotPasswordOtp(email, otpCode);
-            }
-        } catch (Exception e) {
-            logger.error("Async OTP email failed for {}: {}", email, e.getMessage());
-        }
     }
 
     public boolean verifyOtp(String email, String otpCode, OtpType type) {
