@@ -1,5 +1,6 @@
 package com.aihiringplatform.backend.service;
 
+import com.aihiringplatform.backend.config.AuthProperties;
 import com.aihiringplatform.backend.entity.User;
 import com.aihiringplatform.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class UserService {
     @Autowired
     private ActivityLogService activityLogService;
 
+    @Autowired
+    private AuthProperties authProperties;
+
     private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$";
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
@@ -65,6 +69,30 @@ public class UserService {
         java.util.Optional<User> existingUserOpt = userRepository.findByEmail(user.getEmail());
         if (existingUserOpt.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already exists.");
+        }
+
+        if (!authProperties.isEmailVerificationEnabled()) {
+            User registeredUser = new User();
+            registeredUser.setEmail(user.getEmail());
+            registeredUser.setName(user.getName());
+            registeredUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            registeredUser.setRole(user.getRole());
+            // Intended for development/demo deployments where email delivery is unreliable.
+            // Re-enable AUTH_EMAIL_VERIFICATION_ENABLED in production to restore OTP verification.
+            registeredUser.setEmailVerified(true);
+            registeredUser.setAccountStatus(UserStatus.ACTIVE);
+
+            userRepository.save(registeredUser);
+            pendingRegistrationRepository.findByEmail(user.getEmail())
+                    .ifPresent(pendingRegistrationRepository::delete);
+
+            activityLogService.logSuccess(user.getEmail(), user.getRole() != null ? user.getRole().name() : "UNKNOWN", "REGISTER_COMPLETE", "User registration completed without email verification", null);
+
+            return java.util.Map.of(
+                    "email", registeredUser.getEmail(),
+                    "role", registeredUser.getRole(),
+                    "emailVerified", registeredUser.isEmailVerified()
+            );
         }
 
         java.util.Optional<PendingRegistration> existingPendingOpt = pendingRegistrationRepository.findByEmail(user.getEmail());

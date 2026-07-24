@@ -2,6 +2,7 @@ package com.aihiringplatform.backend.service;
 
 import com.aihiringplatform.backend.dto.AuthRequest;
 import com.aihiringplatform.backend.dto.AuthResponse;
+import com.aihiringplatform.backend.config.AuthProperties;
 import com.aihiringplatform.backend.entity.Role;
 import com.aihiringplatform.backend.entity.User;
 import com.aihiringplatform.backend.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +42,9 @@ public class AuthServiceTest {
     @Mock
     private com.aihiringplatform.backend.repository.ActiveSessionRepository activeSessionRepository;
 
+    @Spy
+    private AuthProperties authProperties = new AuthProperties();
+
     @InjectMocks
     private AuthService authService;
 
@@ -49,6 +54,8 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
+        authProperties.setEmailVerificationEnabled(true);
+
         verifiedUser = new User();
         verifiedUser.setEmail("verified@test.com");
         verifiedUser.setPassword("hashedPassword");
@@ -91,5 +98,20 @@ public class AuthServiceTest {
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         assertEquals("Please verify your email address before logging in.", exception.getReason());
+    }
+
+    @Test
+    void login_UnverifiedUser_WhenVerificationDisabled_ShouldReturnToken() {
+        authProperties.setEmailVerificationEnabled(false);
+        validRequest.setEmail("unverified@test.com");
+        when(userRepository.findByEmail("unverified@test.com")).thenReturn(Optional.of(unverifiedUser));
+        when(passwordEncoder.matches("Password123!", "hashedPassword")).thenReturn(true);
+        when(jwtUtil.generateToken("unverified@test.com")).thenReturn("mock-jwt-token");
+
+        AuthResponse response = authService.login(validRequest, org.mockito.Mockito.mock(jakarta.servlet.http.HttpServletRequest.class));
+
+        assertNotNull(response);
+        assertEquals("mock-jwt-token", response.getToken());
+        assertEquals("CANDIDATE", response.getRole());
     }
 }

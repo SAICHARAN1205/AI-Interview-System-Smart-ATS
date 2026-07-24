@@ -2,6 +2,7 @@ package com.aihiringplatform.backend.service;
 
 import com.aihiringplatform.backend.dto.AuthRequest;
 import com.aihiringplatform.backend.dto.AuthResponse;
+import com.aihiringplatform.backend.config.AuthProperties;
 import com.aihiringplatform.backend.entity.User;
 import com.aihiringplatform.backend.repository.UserRepository;
 import com.aihiringplatform.backend.util.JwtUtil;
@@ -33,6 +34,9 @@ public class AuthService {
     @Autowired
     private ActiveSessionRepository activeSessionRepository;
 
+    @Autowired
+    private AuthProperties authProperties;
+
     public AuthResponse login(AuthRequest request, HttpServletRequest httpRequest) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
@@ -58,7 +62,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        if (!user.isEmailVerified()) {
+        if (authProperties.isEmailVerificationEnabled() && !user.isEmailVerified()) {
             activityLogService.logFailure(user.getEmail(), user.getRole().name(), "LOGIN", "Unverified email", httpRequest);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Please verify your email address before logging in.");
         }

@@ -2,12 +2,15 @@ package com.aihiringplatform.backend.service;
 
 import com.aihiringplatform.backend.entity.Role;
 import com.aihiringplatform.backend.entity.User;
+import com.aihiringplatform.backend.entity.UserStatus;
+import com.aihiringplatform.backend.config.AuthProperties;
 import com.aihiringplatform.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +42,9 @@ public class UserServiceTest {
     @Mock
     private com.aihiringplatform.backend.repository.ActiveSessionRepository activeSessionRepository;
 
+    @Spy
+    private AuthProperties authProperties = new AuthProperties();
+
     @InjectMocks
     private UserService userService;
 
@@ -47,6 +53,8 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        authProperties.setEmailVerificationEnabled(true);
+
         newCandidate = new User();
         newCandidate.setEmail("candidate@test.com");
         newCandidate.setPassword("Password123!");
@@ -73,6 +81,27 @@ public class UserServiceTest {
         assertNotNull(savedUser);
         verify(pendingRegistrationRepository).save(any(com.aihiringplatform.backend.entity.PendingRegistration.class));
         verify(otpService).generateAndSendOtp(eq("candidate@test.com"), any());
+    }
+
+    @Test
+    void registerUser_WhenVerificationDisabled_ShouldCreateVerifiedActiveUserWithoutOtp() {
+        authProperties.setEmailVerificationEnabled(false);
+        when(userRepository.findByEmail("candidate@test.com")).thenReturn(java.util.Optional.empty());
+        when(passwordEncoder.encode("Password123!")).thenReturn("hashedPassword");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(pendingRegistrationRepository.findByEmail("candidate@test.com")).thenReturn(java.util.Optional.empty());
+
+        java.util.Map<String, Object> savedUser = userService.registerUser(newCandidate);
+
+        assertEquals("candidate@test.com", savedUser.get("email"));
+        assertEquals(Role.CANDIDATE, savedUser.get("role"));
+        assertEquals(true, savedUser.get("emailVerified"));
+        verify(userRepository).save(argThat(user ->
+                user.isEmailVerified()
+                        && user.getAccountStatus() == UserStatus.ACTIVE
+                        && "hashedPassword".equals(user.getPassword())));
+        verify(pendingRegistrationRepository, never()).save(any());
+        verify(otpService, never()).generateAndSendOtp(anyString(), any());
     }
 
     @Test

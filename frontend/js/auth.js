@@ -389,10 +389,18 @@
         try {
             const response = await window.api.post("/api/users/register", payload, { timeoutMs: 90000 });
             const sessionId = response ? response.sessionId : "";
-            storeVerificationSession(payload.email, sessionId);
-            
-            setMessage(messageBox, "Registration successful. Please verify your email...", "success");
+            const emailVerified = response && response.emailVerified === true;
 
+            if (emailVerified) {
+                setMessage(messageBox, "Registration successful. You can log in now.", "success");
+                window.setTimeout(function () {
+                    window.location.href = `login.html?registered=1&email=${encodeURIComponent(payload.email)}`;
+                }, 1500);
+                return;
+            }
+
+            storeVerificationSession(payload.email, sessionId);
+            setMessage(messageBox, "Registration successful. Please verify your email...", "success");
             window.setTimeout(function () {
                 window.location.href = `verify-email.html?email=${encodeURIComponent(payload.email)}&sessionId=${encodeURIComponent(sessionId)}`;
             }, 1500);

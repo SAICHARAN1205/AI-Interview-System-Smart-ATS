@@ -60,6 +60,7 @@ D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\dto
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\dto\AnalyticsInterviewHistoryItem.java
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\dto\ResumeStatusResponse.java
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\entity\PendingRegistration.java
+D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\config\AuthProperties.java
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\entity\AtsStrictnessLevel.java
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\entity\ExperienceLevel.java
 D:\AI Interview System +Smart ATS\src\main\java\com\aihiringplatform\backend\controller\PlatformAIController.java

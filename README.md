@@ -183,11 +183,16 @@ To run the backend, create a `.env` file or export the following variables:
 ```env
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
+AUTH_EMAIL_VERIFICATION_ENABLED=false
 SPRING_DATASOURCE_URL=jdbc:postgresql://your-supabase-url:6543/postgres?sslmode=require
 SPRING_DATASOURCE_USERNAME=postgres.your_db_user
 SPRING_DATASOURCE_PASSWORD=your_db_password
 JWT_SECRET=your_super_secret_jwt_key_256_bits
 ```
+
+`AUTH_EMAIL_VERIFICATION_ENABLED=false` is useful for development/demo deployments, including Render environments where SMTP delivery is unreliable. In this mode, registration creates an active, email-verified user immediately and skips registration OTP email sending, so users can log in right away.
+
+Set `AUTH_EMAIL_VERIFICATION_ENABLED=true` in production to restore the full registration OTP flow: new accounts remain pending until the verification email OTP is confirmed, and unverified users cannot log in.
 
 ---
 
