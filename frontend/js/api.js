@@ -1,6 +1,6 @@
 (function () {
-    const DEFAULT_BASE_URL = "https://ai-interview-system-smart-ats.onrender.com";
-    // const DEFAULT_BASE_URL = "http://localhost:8080";
+    // const DEFAULT_BASE_URL = "https://ai-interview-system-smart-ats.onrender.com";
+    const DEFAULT_BASE_URL = "http://localhost:8080";
 
     const API_BASE_URL_KEY = "ai_hiring_platform_api_base_url";
     const TOKEN_KEY = "ai_hiring_platform_token";
@@ -157,6 +157,10 @@
         clearToken(true);
         clearRole(true);
         clearUser(true);
+        localStorage.removeItem("ai_hiring_platform_profile");
+        sessionStorage.removeItem("ai_hiring_platform_profile");
+        localStorage.removeItem("app_snapshots");
+        sessionStorage.removeItem("app_snapshots");
         emitAuthChange();
     }
 

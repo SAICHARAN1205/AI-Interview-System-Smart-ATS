@@ -131,8 +131,7 @@ class ResumeServiceUploadValidationTest {
         storedResume = new AtomicReference<>();
 
         lenient().when(userRepository.findByEmail(candidate.getEmail())).thenReturn(Optional.of(candidate));
-        lenient().when(resumeRepository.findTopByUserIdOrderByUploadedAtDesc(candidate.getId()))
-                .thenAnswer(invocation -> Optional.ofNullable(storedResume.get()));
+        lenient().when(resumeRepository.findTopByUserIdOrderByUploadedAtDesc(candidate.getId())).thenReturn(Optional.ofNullable(storedResume.get()));
         lenient().when(resumeRepository.save(any(Resume.class))).thenAnswer(invocation -> {
             Resume resume = invocation.getArgument(0);
             if (resume.getId() == null) {
@@ -414,3 +413,4 @@ class ResumeServiceUploadValidationTest {
         return "." + fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 }
+

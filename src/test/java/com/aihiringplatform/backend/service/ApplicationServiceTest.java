@@ -486,3 +486,4 @@ public class ApplicationServiceTest {
         assertEquals(ApplicationStatus.SELECTED.name(), response.getStatus());
     }
 }
+
