@@ -52,6 +52,11 @@ public class EmailService {
 
     @Async
     public void sendOtpEmailAsync(String email, String otpCode, OtpType type) {
+        // Email verification temporarily disabled for deployment.
+        // Can be re-enabled later without changing the authentication flow.
+        logger.info("Bypassing email dispatch for {}. SMTP is temporarily disabled.", email);
+        return;
+        /*
         try {
             if (type == OtpType.REGISTRATION) {
                 sendRegistrationOtp(email, otpCode);
@@ -61,6 +66,7 @@ public class EmailService {
         } catch (Exception e) {
             logger.error("Async OTP email dispatch failed for {}: {}", email, e.getMessage());
         }
+        */
     }
 
     public void sendRegistrationOtp(String to, String otp) {
